@@ -52,6 +52,7 @@ has basename    => sub ($self) {$self->path_parts->[-1]};
 has content     => sub ($self) {$self->_read};
 has meta        => sub ($self) {yaml $self->content->{yaml}};
 has html        => sub ($self) {markdown $self->content->{markdown}};
+has name        => sub ($self) {$self->_extract_name};
 
 sub _read ($self) {
 
@@ -66,6 +67,19 @@ sub _read ($self) {
 
     # Done
     return $content;
+}
+
+sub _extract_name ($self) {
+
+    # Name from Meta yaml information has priority
+    return $self->meta->{name}
+        if defined $self->meta and defined $self->meta->{name};
+
+    # Extract name from basename (foo_bar.md -> foo bar)
+    my $name = $self->basename;
+    $name =~ s/_/ /g;
+    $name =~ s/\.(md|markdown)$//;
+    return $name;
 }
 
 1;

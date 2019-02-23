@@ -13,12 +13,16 @@ sub startup ($self) {
         )
     });
 
-    # Routes (*cpath doesn't match empty string)
+    # Routes
     my $r = $self->routes;
+
+    # Debug route?
+    my $dbr = $ENV{DIRDOWN_DEBUGROUTE};
+    $r->get($dbr)->to('C#debug')->name('dirdown_debug') if defined $dbr;
+
+    # Content, needs to be the last route because it matches everything
     $r->get('/*cpath')->to('C#content')->name('dirdown_content');
     $r->get('/')->to('C#content');
-
-    $self->log->debug($self->dumper($self->dirdown->tree)); # TODO weg
 }
 
 package Dirdown::C;
@@ -27,6 +31,10 @@ use Mojo::Base 'Mojolicious::Controller', -signatures;
 sub content ($c) {
     my $node = $c->dirdown->content_for($c->param('cpath') // '');
     return $c->reply->not_found unless defined $node;
+}
+
+sub debug ($c) {
+    $c->render(inline => '<pre><%= dumper dirdown->tree %></pre>');
 }
 
 1;

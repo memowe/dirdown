@@ -2,6 +2,6 @@
 use Mojolicious::Lite;
 use lib app->home->rel_file('lib')->to_string;
 
-plugin 'Dirdown';
+plugin Dirdown => {debug => '/debug'};
 
 app->start;

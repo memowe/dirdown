@@ -1,1 +1,6 @@
+# vim swap files
 *.sw[a-p]
+
+# build artifacts
+MYMETA.*
+Makefile

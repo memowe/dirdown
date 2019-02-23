@@ -30,6 +30,13 @@ has tree => sub ($self) {
     return $tree;
 };
 
+# Try to find a content page
+sub content_for ($self, $path) {
+    my $n= $self->tree;
+    $n = exists($n->{$_}) ? $n->{$_} : return for split m|/| => $path;
+    return $n;
+}
+
 package Page;
 use Mojo::Base -base, -signatures;
 

@@ -29,8 +29,16 @@ package Dirdown::C;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 
 sub content ($c) {
-    my $node = $c->dirdown->content_for($c->param('cpath') // '');
-    return $c->reply->not_found unless defined $node;
+
+    # Prepare path
+    my $path = $c->param('cpath') // '';
+    $path =~ s/\.html$//;
+    $path =~ s/^[^\.]+$/$&.md/;
+
+    # Try to serve content
+    my $content = $c->dirdown->content_for($path);
+    return $c->reply->not_found unless defined $content;
+    $c->render(content => $content, template => 'dd_content');
 }
 
 sub debug ($c) {

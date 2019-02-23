@@ -42,7 +42,7 @@ use Mojo::Base -base, -signatures;
 
 use Carp;
 use Text::Markdown 'markdown';
-use YAML; sub yaml ($text) {Load $text}
+use YAML::XS; sub yaml ($text) {Load $text}
 
 has dir         => sub {croak "No 'dir' given!\n"};
 has path        => sub {croak "No 'path' given!\n"};

@@ -9,7 +9,7 @@ WriteMakefile(
     PREREQ_PM           => {
         'Text::Markdown'    => '1.000031',
         'Mojolicious'       => '8.06',
-        'YAML'              => '1.27',
+        'YAML::XS'          => '0.76',
     },
     test                => {TESTS => 't/*.t t/*/*.t'},
 );

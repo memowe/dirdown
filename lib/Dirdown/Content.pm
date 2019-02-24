@@ -21,7 +21,7 @@ has tree => sub ($self) {
     # Go with path parts deep into tree and append the file again
     for my $page (@{$self->pages}) {
         my @parts       = @{$page->path_parts};
-        my $leaf        = pop @parts;
+        (my $leaf       = pop @parts) =~ s/\.\w+$//;
         my $node        = reduce {$a->{$b} //= {}} $tree, @parts;
         $node->{$leaf}  = $page;
     }

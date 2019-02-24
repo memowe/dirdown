@@ -33,7 +33,6 @@ sub content ($c) {
     # Prepare path
     my $path = $c->param('cpath') // '';
     $path =~ s/\.html$//;
-    $path =~ s/^[^\.]+$/$&.md/;
 
     # Try to serve content
     my $content = $c->dirdown->content_for($path);

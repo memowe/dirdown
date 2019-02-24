@@ -9,8 +9,8 @@ use List::Util 'reduce';
 has dir     => sub {croak "No Dirdown directory 'dir' given!\n"};
 has paths   => sub ($self) {Mojo::File->new($self->dir)->list_tree};
 has mdpaths => sub ($self) {$self->paths->grep(qr/\.(md|markdown)$/)};
-has pages   => sub ($self) {$self->mdpaths->map(sub ($file) {
-    Page->new(dir => $self->dir, path => $file);
+has pages   => sub ($self) {$self->mdpaths->map(sub ($path) {
+    Page->new(dir => $self->dir, path => $path);
 })};
 
 # Content tree

@@ -10,10 +10,8 @@ sub register ($self, $app, $conf) {
     $ENV{DIRDOWN_DEBUGROUTE} //= $conf->{debug};
 
     # Mount the dirdown app in the app using us as a plugin
-    $app->plugin(Mount => {
-        $conf->{prefix} // '/dirdown',
-        $app->home->rel_file('script/dirdown'),
-    });
+    my $prefix  = $conf->{prefix} // '/dirdown';
+    my $route   = $app->routes->route($prefix)->detour('Dirdown');
 }
 
 1;

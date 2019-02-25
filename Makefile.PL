@@ -11,5 +11,8 @@ WriteMakefile(
         'Mojolicious'       => '8.06',
         'YAML::XS'          => '0.76',
     },
+    TEST_REQUIRES => {
+        'Test::Exception'   => '0.43',
+    },
     test                => {TESTS => 't/*.t t/*/*.t'},
 );

@@ -34,7 +34,25 @@ subtest 'Tree construction' => sub {
 };
 
 subtest 'Content search' => sub {
-    ok 1; # TODO
+    is $content->content_for('') => undef, "Nothing found for ''";
+    is $content->content_for('xnorfzt') => undef, "Nothing found for 'xnorfzt'";
+    is $content->content_for('bar') => undef, "Nothing for directory 'foo'";
+
+    subtest 'F_oo page' => sub {
+        my $page = $content->content_for('F_oo');
+        ok defined($page), 'Got something back';
+        isa_ok $page => 'Dirdown::Content::Page', 'Found a node';
+        is $page->dir => $content->dir, 'Correct content dir';
+        is $page->path => $file_foo, 'Correct content path';
+    };
+
+    subtest 'bar/baz page' => sub {
+        my $page = $content->content_for('bar/baz');
+        ok defined($page), 'Got something back';
+        isa_ok $page => 'Dirdown::Content::Page', 'Found a node';
+        is $page->dir => $content->dir, 'Correct content dir';
+        is $page->path => $file_baz, 'Correct content path';
+    };
 };
 
 done_testing;

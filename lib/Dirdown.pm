@@ -37,11 +37,11 @@ sub content ($c) {
     # Try to serve content
     my $content = $c->dirdown->content_for($path);
     return $c->reply->not_found unless defined $content;
-    $c->render(content => $content, template => 'dd_content');
+    $c->render(content => $content, template => 'content');
 }
 
 sub debug ($c) {
-    $c->render(inline => '<pre><%= dumper dirdown->tree %></pre>');
+    $c->render(inline => '<pre><%= dumper dirdown->full_tree %></pre>');
 }
 
 1;

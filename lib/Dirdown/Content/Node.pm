@@ -43,7 +43,7 @@ sub _lc ($self, $node) {
 
 # Try to find a content page
 sub content_for ($self, $path) {
-    my ($next_part, $rest)  = $path =~ m|^([^/]+)(?:/(.*))?|;
+    my ($next_part, $rest)  = ($path // '') =~ m|^([^/]+)(?:/(.*))?|;
     return unless my $found = $self->children_hr->{$next_part // ''};
     return $found->content_for($rest // '');
 }

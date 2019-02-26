@@ -14,5 +14,9 @@ WriteMakefile(
     TEST_REQUIRES => {
         'Test::Exception'   => '0.43',
     },
+    META_MERGE          => {resources => {
+        bugtracker => 'https://github.com/memowe/dirdown/issues',
+        repository => 'https://github.com/memowe/dirdown',
+    }},
     test                => {TESTS => 't/*.t t/*/*.t'},
 );

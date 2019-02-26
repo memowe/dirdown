@@ -10,7 +10,7 @@ has path        => sub {croak "No 'path' given!\n"};
 has rel_path    => sub ($self) {$self->path->to_rel($self->dir)};
 has path_parts  => sub ($self) {$self->rel_path->to_array};
 has basename    => sub ($self) {$self->path_parts->[-1]};
-has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0]};
+has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0] // 0};
 has path_name   => sub ($self) {($self->basename =~
     /^(?:\d+_)?(.*?)(?:\.\w+)?$/)[0]};
 has children    => sub ($self) {$self->_children};

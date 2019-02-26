@@ -8,7 +8,7 @@ WriteMakefile(
     MIN_PERL_VERSION    => '5.20.1',
     PREREQ_PM           => {
         'Text::Markdown'    => '1.000031',
-        'Mojolicious'       => '8.06',
+        'Mojolicious'       => '8.12',
         'YAML::XS'          => '0.76',
     },
     TEST_REQUIRES => {

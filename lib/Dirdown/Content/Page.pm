@@ -3,7 +3,7 @@ use Mojo::Base 'Dirdown::Content::Node', -signatures;
 
 use Carp;
 use Text::Markdown 'markdown';
-use YAML::XS; sub yaml ($text) {Load $text}
+use YAML::XS; sub yaml ($text) {Load($text) // {}}
 
 has content     => sub ($self) {$self->_read};
 has meta        => sub ($self) {yaml $self->content->{yaml}};
@@ -14,7 +14,7 @@ sub _read ($self) {
 
     # Prepare raw content
     my $content     = {};
-    $content->{raw} = $self->path->slurp;
+    $content->{raw} = $self->path->slurp; # don't encode
 
     # Try to split
     my ($first, $second) = split /^---+$/m => $content->{raw};
@@ -28,8 +28,7 @@ sub _read ($self) {
 sub _extract_name ($self) {
 
     # Name from Meta yaml information has priority
-    return $self->meta->{name}
-        if defined $self->meta and defined $self->meta->{name};
+    return $self->meta->{name} if defined $self->meta->{name};
 
     # Extract name from basename (foo_bar.md -> foo bar)
     my $name = $self->path_name;

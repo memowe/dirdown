@@ -13,7 +13,7 @@ sub register ($self, $app, $conf) {
     $ENV{DIRDOWN_DEBUGROUTE} //= $conf->{debug};
 
     # Mount the dirdown app in the app using us as a plugin
-    my $prefix  = $conf->{prefix} // '/dirdown';
+    my $prefix  = $conf->{prefix} // '/pages';
     my $route   = $app->routes->route($prefix)->detour('Dirdown');
 }
 

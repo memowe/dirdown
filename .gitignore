@@ -4,3 +4,8 @@
 # build artifacts
 MYMETA.*
 Makefile
+blib
+pm_to_blib
+
+# coverage test data
+cover_db

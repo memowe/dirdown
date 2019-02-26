@@ -7,6 +7,7 @@ use Test::More;
 use Test::Exception;
 use Mojo::File 'tempdir';
 use Mojo::Util 'encode';
+use Text::Markdown 'markdown';
 
 ### Prepare dirdown directory structure with content
 my $dir         = tempdir;
@@ -29,8 +30,120 @@ subtest Node => sub {
         throws_ok {$no->path} qr/^No 'path' given\b/, 'Correct path exception';
     };
 
-    my $node = Dirdown::Content::Node->new(dir => $dir, path => $file_foo);
-    isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+    subtest 'File foo' => sub {
+
+        my $node = Dirdown::Content::Node->new(dir => $dir, path => $file_foo);
+        isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+
+        subtest 'Basic data' => sub {
+            is $node->rel_path => '1_F_oo.md', 'Correct rel_path';
+            is_deeply $node->path_parts => ['1_F_oo.md'], 'Correct path parts';
+            is $node->basename => '1_F_oo.md', 'Correct basename';
+            is $node->sort_val => 1, 'Correct sort value';
+            is $node->path_name => 'F_oo', 'Correct path name';
+        };
+
+        subtest 'Tree data' => sub {
+            isa_ok $node->children, 'Mojo::Collection', 'Children';
+            is $node->children->size => 0, 'No Children';
+        };
+    };
+
+    subtest 'Directory bar' => sub {
+
+        my $node = Dirdown::Content::Node->new(dir => $dir, path => $dir_bar);
+        isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+
+        subtest 'Basic data' => sub {
+            is $node->rel_path => '2_bar', 'Correct rel_path';
+            is_deeply $node->path_parts => ['2_bar'], 'Correct path parts';
+            is $node->basename => '2_bar', 'Correct basename';
+            is $node->sort_val => 2, 'Correct sort value';
+            is $node->path_name => 'bar', 'Correct path name';
+        };
+
+        subtest 'Tree data' => sub {
+            isa_ok $node->children, 'Mojo::Collection', 'Children';
+            is $node->children->size => 1, 'One child';
+            my $child = $node->children->[0];
+            isa_ok $child, 'Dirdown::Content::Page', 'First child';
+            is $child->path => $file_baz, 'Correct child path';
+        };
+
+        subtest 'Content lookup' => sub {
+            is $node->content_for(undef) => undef, 'No content for undef';
+            is $node->content_for('') => undef, "No content for ''";
+            my $child = $node->content_for('baz');
+            isa_ok $child => 'Dirdown::Content::Page', "'baz' child";
+            is $child->path => $file_baz, 'Correct child path';
+        }
+    };
+
+    subtest 'File baz' => sub {
+
+        my $node = Dirdown::Content::Node->new(dir => $dir, path => $file_baz);
+        isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+
+        subtest 'Basic data' => sub {
+            is $node->rel_path => '2_bar/baz.md', 'Correct rel_path';
+            is_deeply $node->path_parts => ['2_bar', 'baz.md'],
+                'Correct path parts';
+            is $node->basename => 'baz.md', 'Correct basename';
+            is $node->sort_val => 0, 'Correct sort value';
+            is $node->path_name => 'baz', 'Correct path name';
+        };
+
+        subtest 'Tree data' => sub {
+            isa_ok $node->children, 'Mojo::Collection', 'Children';
+            is $node->children->size => 0, 'No Children';
+        };
+    };
+};
+
+subtest Page => sub {
+    isa_ok 'Dirdown::Content::Page' => 'Dirdown::Content::Node';
+
+    subtest 'File foo' => sub {
+
+        my $page = Dirdown::Content::Page->new(dir => $dir, path => $file_foo);
+        isa_ok $page => 'Dirdown::Content::Page', 'Constructed page object';
+
+        is_deeply $page->content => {
+            raw         => '# Foo',
+            yaml        => '',
+            markdown    => '# Foo',
+        }, 'Correct content parts';
+
+        is_deeply $page->meta => {}, 'Correct yaml meta data';
+        is $page->html => markdown('# Foo'), 'Correct markdown generated HTML';
+        is $page->name => 'F oo', 'Correct page name';
+        is $page->content_for('xnorfzt') => undef, "No content for 'xnorfzt'";
+        is $page->content_for('') => $page, 'A page is its own empty content';
+    };
+
+    subtest 'File baz' => sub {
+
+        my $page = Dirdown::Content::Page->new(dir => $dir, path => $file_baz);
+        isa_ok $page => 'Dirdown::Content::Page', 'Constructed page object';
+
+        subtest 'Raw content' => sub {
+            my $raw = encode 'UTF-8' =>
+                "answer: 42\nname: Es ist schön\n---\n# B! A! Z!\n";
+            my ($yaml, $markdown) = split /---/ => $raw;
+            is_deeply $page->content => {
+                raw      => $raw,
+                yaml     => $yaml,
+                markdown => $markdown,
+            }, 'Correct content parts';
+        };
+
+        is_deeply $page->meta => {answer => 42, name => "Es ist schön"},
+            'Correct yaml meta data';
+        is $page->html => markdown('# B! A! Z!'), 'Correct generated HTML';
+        is $page->name => 'Es ist schön', 'Correct page name';
+        is $page->content_for('xnorfzt') => undef, "No content for 'xnorfzt'";
+        is $page->content_for('') => $page, 'A page is its own empty content';
+    };
 };
 
 done_testing;

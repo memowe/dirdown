@@ -2,15 +2,15 @@ package Dirdown;
 use Mojo::Base 'Mojolicious', -signatures;
 
 use Dirdown::Content;
+use Mojo::File 'path';
 
 sub startup ($self) {
 
     # Prepare Dirdown
     $self->helper(dirdown => sub {
-        state $dirdown = Dirdown::Content->new(
-            dir => $ENV{DIRDOWN_CONTENT}
-                // $self->home->rel_file('dirdown_content')
-        )
+        my $dir = $ENV{DIRDOWN_CONTENT}
+            // $self->home->rel_file('dirdown_content')->to_string;
+        state $dirdown = Dirdown::Content->new(dir => path($dir));
     });
 
     # Routes

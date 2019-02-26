@@ -8,9 +8,10 @@ use List::Util 'reduce';
 
 # Content list
 has dir     => sub {croak "No Dirdown directory 'dir' given!\n"};
-has tree    => sub ($self) {
-    Dirdown::Content::Node->new(dir => $self->dir, path => $self->dir);
-};
+has home    => 'index';
+has tree    => sub ($self) {Dirdown::Content::Node->new(
+    dir => $self->dir, path => $self->dir, home => $self->home
+)};
 
 sub full_tree ($self) {$self->tree->full_tree}
 

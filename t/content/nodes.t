@@ -98,6 +98,14 @@ subtest Node => sub {
             is $node->children->size => 0, 'No Children';
         };
     };
+
+    subtest 'Directory home' => sub {
+        my $dir = Dirdown::Content::Node->new(
+            dir => $dir, path => $dir_bar, home => 'baz'
+        );
+        is $dir->content_for('') => $dir->content_for('baz'),
+            'Correct directory home';
+    };
 };
 
 subtest Page => sub {

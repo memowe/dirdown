@@ -21,7 +21,7 @@ subtest 'Invalid arguments' => sub {
         'Correct dir exception';
 };
 
-my $content = Dirdown::Content->new(dir => $dir);
+my $content = Dirdown::Content->new(dir => $dir, home => 'baz');
 
 subtest 'Tree construction' => sub {
     isa_ok $content->tree   => 'Dirdown::Content::Node', 'Tree';
@@ -36,12 +36,11 @@ subtest 'Tree construction' => sub {
 subtest 'Content search' => sub {
     is $content->content_for('') => undef, "Nothing found for ''";
     is $content->content_for('xnorfzt') => undef, "Nothing found for 'xnorfzt'";
-    is $content->content_for('bar') => undef, "Nothing for directory 'foo'";
 
     subtest 'F_oo page' => sub {
         my $page = $content->content_for('F_oo');
         ok defined($page), 'Got something back';
-        isa_ok $page => 'Dirdown::Content::Page', 'Found a node';
+        isa_ok $page => 'Dirdown::Content::Page';
         is $page->dir => $content->dir, 'Correct content dir';
         is $page->path => $file_foo, 'Correct content path';
     };
@@ -49,7 +48,15 @@ subtest 'Content search' => sub {
     subtest 'bar/baz page' => sub {
         my $page = $content->content_for('bar/baz');
         ok defined($page), 'Got something back';
-        isa_ok $page => 'Dirdown::Content::Page', 'Found a node';
+        isa_ok $page => 'Dirdown::Content::Page';
+        is $page->dir => $content->dir, 'Correct content dir';
+        is $page->path => $file_baz, 'Correct content path';
+    };
+
+    subtest 'bar page' => sub {
+        my $page = $content->content_for('bar');
+        ok defined($page), 'Got something back';
+        isa_ok $page => 'Dirdown::Content::Page';
         is $page->dir => $content->dir, 'Correct content dir';
         is $page->path => $file_baz, 'Correct content path';
     };

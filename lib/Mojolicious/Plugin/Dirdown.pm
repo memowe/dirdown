@@ -6,6 +6,9 @@ sub register ($self, $app, $conf) {
     # Prepare content directory (may be undef, will be set later)
     $ENV{DIRDOWN_CONTENT} //= $conf->{dir};
 
+    # Prepare directory home
+    $ENV{DIRDOWN_DIRECTORYHOME} //= $conf->{home};
+
     # Enable debug route
     $ENV{DIRDOWN_DEBUGROUTE} //= $conf->{debug};
 

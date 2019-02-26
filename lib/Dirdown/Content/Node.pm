@@ -7,6 +7,7 @@ use Dirdown::Content::Page;
 
 has dir         => sub {croak "No 'dir' given!\n"};
 has path        => sub {croak "No 'path' given!\n"};
+has home        => 'index';
 has rel_path    => sub ($self) {$self->path->to_rel($self->dir)};
 has path_parts  => sub ($self) {$self->rel_path->to_array};
 has basename    => sub ($self) {$self->path_parts->[-1]};
@@ -27,7 +28,7 @@ sub _children ($self) {
             my $child_obj   = (-f $path)
                 ? Dirdown::Content::Page->new
                 : Dirdown::Content::Node->new;
-            return $child_obj->path($path)->dir($self->dir);
+            return $child_obj->path($path)->dir($self->dir)->home($self->home);
         });
 }
 
@@ -43,9 +44,20 @@ sub _lc ($self, $node) {
 
 # Try to find a content page
 sub content_for ($self, $path) {
-    my ($next_part, $rest)  = ($path // '') =~ m|^([^/]+)(?:/(.*))?|;
-    return unless my $found = $self->children_hr->{$next_part // ''};
-    return $found->content_for($rest // '');
+
+    # Try to work with the next part of the path
+    my ($next_part, $rest)  = ($path // '') =~ m|^([^/]*)(?:/(.*))?|;
+
+    # Found something: give/delegate (pages give themselves)
+    my $found = $self->children_hr->{$next_part};
+    return $found->content_for($rest // '') if defined $found;
+
+    # Nothing found and path is empty: try to find a directory home
+    return $self->children_hr->{$self->home}
+        if $next_part eq '' and exists $self->children_hr->{$self->home};
+
+    # Nothing found
+    return;
 }
 
 1;

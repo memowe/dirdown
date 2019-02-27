@@ -1,0 +1,5 @@
+% layout 'dirdown', title => 'Dirdown debug: content tree';
+
+<pre>
+    %= dumper dirdown->full_tree
+</pre>

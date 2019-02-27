@@ -9,21 +9,21 @@ use Mojo::File 'tempdir';
 # No logs in this test, please
 local $ENV{MOJO_LOG_LEVEL} = 'error';
 
-subtest 'Default operations' => sub {
+# Prepare dirdown directory structure with content
+my $dir         = tempdir;
+my $file_foo    = $dir      ->child('1_F_oo.md')->spurt('# Foo');
+my $dir_bar     = $dir      ->child('2_bar')->make_path;
+my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# B! A! Z!');
+
+
+subtest 'No debug' => sub {
+    local $ENV{DIRDOWN_CONTENT} = $dir;
     my $t = Test::Mojo->new('Dirdown');
     $t->get_ok('/debug')->status_is(404); # No debug route
-    like $t->app->dirdown->dir => qr|dirdown_content$|, 'Default dirdown dir';
+    $t->get_ok('/F_oo')->status_is(200)->text_is(h1 => 'Foo');
 };
 
 subtest Configured => sub {
-
-    ### Prepare dirdown directory structure with content
-    my $dir         = tempdir;
-    my $file_foo    = $dir      ->child('1_F_oo.md')->spurt('# Foo');
-    my $dir_bar     = $dir      ->child('2_bar')->make_path;
-    my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# B! A! Z!');
-
-    ### Preparations done
 
     local $ENV{DIRDOWN_CONTENT}         = $dir;
     local $ENV{DIRDOWN_DEBUGROUTE}      = '/xnorfzt';

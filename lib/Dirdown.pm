@@ -21,14 +21,29 @@ sub startup ($self) {
     # Routes
     my $r = $self->routes;
 
-    # Debug route?
+    # Debug route? Renders by using template only
     $self->debug($ENV{DIRDOWN_DEBUGROUTE});
-    $r->get($self->debug)->to('Controller#debug')->name('dirdown_debug')
-        if defined $self->debug;
+    $r->get($self->debug)->name('dirdown_debug') if defined $self->debug;
 
     # Content, needs to be the last route because it matches everything
-    $r->get('/*cpath')->to('Controller#content')->name('dirdown_page');
-    $r->get('/')->to('Controller#content');
+    $r->get('/*cpath')->to(cb => \&_serve)->name('dirdown_page');
+    $r->get('/')->to(cb => \&_serve);
+}
+
+# Try to be a controller
+sub _serve ($c) {
+
+    # Prepare path
+    (my $path = $c->param('cpath') // '') =~ s/\.html//;
+
+    # Try to find content
+    my $page = $c->dirdown->content_for($path);
+    return $c->reply->not_found unless defined $page;
+
+    # Serve
+    $c->render(page => $page, template =>
+        (defined $c->app->debug) ? 'dirdown_page_debug' : 'dirdown_page'
+    );
 }
 
 1;

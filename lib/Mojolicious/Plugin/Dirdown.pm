@@ -3,17 +3,11 @@ use Mojo::Base 'Mojolicious::Plugin', -signatures;
 
 sub register ($self, $app, $conf) {
 
-    # Prepare content directory (may be undef, will be set later)
-    $ENV{DIRDOWN_CONTENT} //= $conf->{dir};
-
-    # Prepare directory home
-    $ENV{DIRDOWN_DIRECTORYHOME} //= $conf->{home};
-
-    # Prepare custom templates
-    $ENV{DIRDOWN_TEMPLATES} //= $conf->{templates};
-
-    # Enable debug route
-    $ENV{DIRDOWN_DEBUGROUTE} //= $conf->{debug};
+    # Inject dirdown configuration
+    $ENV{DIRDOWN_CONTENT}       //= $conf->{dir}; # Content directory
+    $ENV{DIRDOWN_DIRECTORYHOME} //= $conf->{home}; # Home page name
+    $ENV{DIRDOWN_TEMPLATES}     //= $conf->{templates}; # Custom template dir
+    $ENV{DIRDOWN_DEBUGROUTE}    //= $conf->{debug}; # Debug route
 
     # Mount the dirdown app in the app using us as a plugin
     my $prefix  = $conf->{prefix} // '/pages';

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
-use lib app->home->rel_file('lib')->to_string;
+use lib app->home->rel_file('../lib')->to_string;
 
 plugin Dirdown => {debug => '/debug', home => 'baz'};
 

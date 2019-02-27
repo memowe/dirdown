@@ -1,4 +1,4 @@
-% layout 'dirdown', title => $page->name;
+% layout 'dirdown', title => $page->name . ' (debug)';
 
 <p id="dirdown_debug_name">This is
     "<strong><%= $page->name %></strong>"

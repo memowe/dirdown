@@ -9,6 +9,9 @@ sub register ($self, $app, $conf) {
     # Prepare directory home
     $ENV{DIRDOWN_DIRECTORYHOME} //= $conf->{home};
 
+    # Prepare custom templates
+    $ENV{DIRDOWN_TEMPLATES} //= $conf->{templates};
+
     # Enable debug route
     $ENV{DIRDOWN_DEBUGROUTE} //= $conf->{debug};
 

@@ -12,13 +12,19 @@ my $file_foo    = $dir      ->child('1_F_oo.md')->spurt('# Foo');
 my $dir_bar     = $dir      ->child('2_bar')->make_path;
 my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# B! A! Z!');
 ### Prepare web app
+my $templates   = tempdir;
+$templates->child('dirdown_page_debug.html.ep')->spurt(<<'TEMPLATE');
+<p>test template</p>
+%== $page->html
+TEMPLATE
 use Mojolicious::Lite;
 use lib app->home->rel_file('../lib')->to_string;
 plugin Dirdown => {
-    prefix  => '/x',
-    dir     => $dir,
-    home    => 'baz',
-    debug   => '/debug',
+    prefix      => '/x',
+    dir         => $dir,
+    home        => 'baz',
+    debug       => '/debug',
+    templates   => $templates,
 };
 get '/' => {text => 'App with plugin'};
 ### End of preparations
@@ -35,6 +41,10 @@ subtest Content => sub {
     $t->get_ok('/x/F_oo')->status_is(200)->text_is(h1 => 'Foo');
     $t->get_ok('/x/bar/baz')->status_is(200)->text_is(h1 => 'B! A! Z!');
     $t->get_ok('/x/bar')->status_is(200)->text_is(h1 => 'B! A! Z!');
+};
+
+subtest 'Custom templates' => sub {
+    $t->get_ok('/x/F_oo')->status_is(200)->text_is(p => 'test template');
 };
 
 subtest Debug => sub {

@@ -19,6 +19,10 @@ sub startup ($self) {
     });
     $self->debug($ENV{DIRDOWN_DEBUGROUTE});
 
+    # Custom templates
+    my $tmpls = $ENV{DIRDOWN_TEMPLATES};
+    unshift @{$self->renderer->paths}, $tmpls if defined $tmpls;
+
     # Routes
     my $r = $self->routes;
     $r->get($self->debug)->name('dirdown_debug') if defined $self->debug;

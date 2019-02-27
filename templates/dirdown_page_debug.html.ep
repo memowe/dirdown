@@ -1,0 +1,24 @@
+% layout 'dirdown', title => $page->name;
+
+<p id="dirdown_debug_name">This is
+    "<strong><%= $page->name %></strong>"
+    (<%= $page->path %>).
+</p>
+
+<p>Some available data:</p>
+
+<ul id="dirdown_debug_data">
+    <li id="dirdown_debug_meta"><strong><code>$page->meta</code></strong>:
+        <blockquote><pre><%= dumper $page->meta %></pre></blockquote></li>
+    <li id="dirdown_debug_navi_tree"><strong><code>$navi_tree</code></strong>:
+        <blockquote><pre>TODO</pre></blockquote></li>
+    <li id="dirdown_debug_navi_stack"><strong><code>$navi_stack</code></strong>:
+        <blockquote><pre>TODO</pre></blockquote></li>
+    <li><strong><code>$page->html</code></strong> below</li>
+</ul>
+
+<hr>
+
+<section id="dirdown-content">
+    %== $page->html
+</section>

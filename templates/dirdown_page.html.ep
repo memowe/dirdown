@@ -1,0 +1,5 @@
+% layout 'dirdown', title => $page->name;
+
+<section id="dirdown-content">
+    %== $page->html
+</section>

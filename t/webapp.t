@@ -31,11 +31,23 @@ subtest Configured => sub {
     my $t = Test::Mojo->new('Dirdown');
 
     subtest Debug => sub {
-        $t->get_ok('/xnorfzt')->status_is(200)
-            ->content_like(qr/$dir/)
-            ->content_like(qr/$file_foo/)
-            ->content_like(qr/$dir_bar/)
-            ->content_like(qr/$file_baz/);
+
+        subtest Route => sub {
+            $t->get_ok('/xnorfzt')->status_is(200)
+                ->content_like(qr/$dir/)
+                ->content_like(qr/$file_foo/)
+                ->content_like(qr/$dir_bar/)
+                ->content_like(qr/$file_baz/);
+        };
+
+        subtest 'Template extension' => sub {
+            $t->get_ok('/bar')->status_is(200)
+                ->text_like('#dirdown_debug_name strong' => qr/baz/)
+                ->text_like('#dirdown_debug_name' => qr|2_bar/baz\.md|)
+                ->text_is('#dirdown_debug_meta pre' => $t->app->dumper(
+                    $t->app->dirdown->content_for('bar')->meta))
+                ->text_is(h1 => 'B! A! Z!');
+        };
     };
 
     subtest Content => sub {

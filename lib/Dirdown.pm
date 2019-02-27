@@ -8,7 +8,7 @@ has 'debug';
 
 sub startup ($self) {
 
-    # Prepare Dirdown
+    # Prepare
     $self->helper(dirdown => sub {
         my $dir = $ENV{DIRDOWN_CONTENT}
             // $self->home->rel_file('dirdown_content')->to_string;
@@ -17,15 +17,11 @@ sub startup ($self) {
             home    => $ENV{DIRDOWN_DIRECTORYHOME},
         );
     });
+    $self->debug($ENV{DIRDOWN_DEBUGROUTE});
 
     # Routes
     my $r = $self->routes;
-
-    # Debug route? Renders by using template only
-    $self->debug($ENV{DIRDOWN_DEBUGROUTE});
     $r->get($self->debug)->name('dirdown_debug') if defined $self->debug;
-
-    # Content, needs to be the last route because it matches everything
     $r->get('/*cpath')->to(cb => \&_serve)->name('dirdown_page');
     $r->get('/')->to(cb => \&_serve);
 }

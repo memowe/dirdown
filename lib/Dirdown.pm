@@ -4,6 +4,8 @@ use Mojo::Base 'Mojolicious', -signatures;
 use Dirdown::Content;
 use Mojo::File 'path';
 
+has 'debug';
+
 sub startup ($self) {
 
     # Prepare Dirdown
@@ -20,8 +22,9 @@ sub startup ($self) {
     my $r = $self->routes;
 
     # Debug route?
-    my $dbr = $ENV{DIRDOWN_DEBUGROUTE};
-    $r->get($dbr)->to('C#debug')->name('dirdown_debug') if defined $dbr;
+    $self->debug($ENV{DIRDOWN_DEBUGROUTE});
+    $r->get($self->debug)->to('C#debug')->name('dirdown_debug')
+        if defined $self->debug;
 
     # Content, needs to be the last route because it matches everything
     $r->get('/*cpath')->to('C#content')->name('dirdown_content');

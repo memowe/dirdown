@@ -106,6 +106,17 @@ subtest Node => sub {
         is $dir->content_for('') => $dir->content_for('baz'),
             'Correct directory home';
     };
+
+    subtest Equality => sub {
+        my ($p1, $p2, $p3) = map {
+            Dirdown::Content::Node->new(dir => $dir, path => $_)
+        } $dir_bar, $dir_bar, $file_baz;
+
+        ok $p1->equals($p2), 'Same path';
+        ok $p2->equals($p1), 'Same path, the other way round';
+        ok not($p1->equals($p3)), 'Different path';
+        ok not($p3->equals($p1)), 'Different path, the other way round';
+    };
 };
 
 subtest Page => sub {
@@ -151,6 +162,17 @@ subtest Page => sub {
         is $page->name => 'Es ist schön', 'Correct page name';
         is $page->content_for('xnorfzt') => undef, "No content for 'xnorfzt'";
         is $page->content_for('') => $page, 'A page is its own empty content';
+    };
+
+    subtest Equality => sub {
+        my ($p1, $p2, $p3) = map {
+            Dirdown::Content::Page->new(dir => $dir, path => $_)
+        } $file_foo, $file_foo, $file_baz;
+
+        ok $p1->equals($p2), 'Same path';
+        ok $p2->equals($p1), 'Same path, the other way round';
+        ok not($p1->equals($p3)), 'Different path';
+        ok not($p3->equals($p1)), 'Different path, the other way round';
     };
 };
 

@@ -32,6 +32,11 @@ sub _children ($self) {
         });
 }
 
+sub equals ($self, $other) {
+        $self->dir->to_string eq $other->dir->to_string
+    and $self->path->to_string eq $other->path->to_string;
+}
+
 # Un-lazy content tree
 sub full_tree ($self) {
     $self->_lc($self);

@@ -29,7 +29,7 @@ sub _children ($self) {
                 ? Dirdown::Content::Page->new
                 : Dirdown::Content::Node->new;
             return $child_obj->path($path)->dir($self->dir)->home($self->home);
-        });
+        })->sort(sub {$a->sort_val <=> $b->sort_val});
 }
 
 sub equals ($self, $other) {

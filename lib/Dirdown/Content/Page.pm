@@ -5,10 +5,10 @@ use Carp;
 use Text::Markdown 'markdown';
 use YAML::XS; sub yaml ($text) {Load($text) // {}}
 
-has content     => sub ($self) {$self->_read};
+has content     => \&_read;
 has meta        => sub ($self) {yaml $self->content->{yaml}};
 has html        => sub ($self) {markdown $self->content->{markdown}};
-has name        => sub ($self) {$self->_extract_name};
+has name        => \&_extract_name;
 
 sub _read ($self) {
 

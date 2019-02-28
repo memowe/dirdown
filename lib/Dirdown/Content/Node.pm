@@ -14,7 +14,7 @@ has basename    => sub ($self) {$self->path_parts->[-1]};
 has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0] // 0};
 has path_name   => sub ($self) {($self->basename =~
     /^(?:\d+_)?(.*?)(?:\.\w+)?$/)[0]};
-has children    => sub ($self) {$self->_children};
+has children    => \&_children;
 has children_hr => sub ($self) {+{
     map {$_->path_name => $_} @{$self->children->to_array}
 }};

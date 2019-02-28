@@ -12,12 +12,17 @@ has rel_path    => sub ($self) {$self->path->to_rel($self->dir)};
 has path_parts  => sub ($self) {$self->rel_path->to_array};
 has basename    => sub ($self) {$self->path_parts->[-1]};
 has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0] // 0};
-has path_name   => sub ($self) {($self->basename =~
-    /^(?:\d+_)?(.*?)(?:\.\w+)?$/)[0]};
+has path_name   => \&_path_name;
 has children    => \&_children;
-has children_hr => sub ($self) {+{
-    map {$_->path_name => $_} @{$self->children->to_array}
-}};
+has children_hr => \&_children_hr;
+
+sub _path_name ($self) {
+    ($self->basename =~ /^  # start
+        (?: \d+ _ )?        # optional sort value
+        (   .*?   )         # name we need (captured)
+        (?: \.\w+ )?        # optional file extension
+    $/x)[0];                # end of string
+}
 
 sub _children ($self) {
     opendir my $dh, $self->path or return Mojo::Collection->new;
@@ -30,6 +35,10 @@ sub _children ($self) {
                 ? Dirdown::Content::Page->new(%args)
                 : Dirdown::Content::Node->new(%args);
         })->sort(sub {$a->sort_val <=> $b->sort_val});
+}
+
+sub _children_hr ($self) {
+    return { map {$_->path_name => $_} @{$self->children->to_array} };
 }
 
 sub equals ($self, $other) {

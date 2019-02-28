@@ -24,11 +24,11 @@ sub _children ($self) {
     return Mojo::Collection->new(readdir $dh)
         ->grep(sub ($name) {$name !~ /^\.\.?$/})
         ->map(sub ($name) {
-            my $path        = $self->path->child($name);
-            my $child_obj   = (-f $path)
-                ? Dirdown::Content::Page->new
-                : Dirdown::Content::Node->new;
-            return $child_obj->path($path)->dir($self->dir)->home($self->home);
+            my $path = $self->path->child($name);
+            my %args = (path => $path, dir => $self->dir, home => $self->home);
+            return (-f $path)
+                ? Dirdown::Content::Page->new(%args)
+                : Dirdown::Content::Node->new(%args);
         })->sort(sub {$a->sort_val <=> $b->sort_val});
 }
 

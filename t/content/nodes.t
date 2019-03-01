@@ -135,6 +135,15 @@ subtest Node => sub {
         ok not($p1->equals($p3)), 'Different path';
         ok not($p3->equals($p1)), 'Different path, the other way round';
     };
+
+    subtest 'Copy constructor' => sub {
+        my $node = Dirdown::Content::Node->new(
+            dir => $dir, path => $dir_bar);
+        my $clone = $node->clone;
+        isa_ok $clone => 'Dirdown::Content::Node', 'Cloned node';
+        ok $clone->equals($node), '"Equal"';
+        ok $clone != $node, 'Not the same';
+    };
 };
 
 subtest Page => sub {
@@ -191,6 +200,15 @@ subtest Page => sub {
         ok $p2->equals($p1), 'Same path, the other way round';
         ok not($p1->equals($p3)), 'Different path';
         ok not($p3->equals($p1)), 'Different path, the other way round';
+    };
+
+    subtest 'Copy constructor' => sub {
+        my $node = Dirdown::Content::Page->new(
+            dir => $dir, path => $file_foo);
+        my $clone = $node->clone;
+        isa_ok $clone => 'Dirdown::Content::Page', 'Cloned page';
+        ok $clone->equals($node), '"Equal"';
+        ok $clone != $node, 'Not the same';
     };
 };
 

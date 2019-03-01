@@ -41,6 +41,11 @@ sub _children_hr ($self) {
     return { map {$_->path_name => $_} @{$self->children->to_array} };
 }
 
+sub clone ($self) {
+    return __PACKAGE__->new(
+        dir => $self->dir, path => $self->path, home => $self->home);
+}
+
 sub equals ($self, $other) {
         $self->dir->to_string eq $other->dir->to_string
     and $self->path->to_string eq $other->path->to_string;

@@ -37,6 +37,11 @@ sub _extract_name ($self) {
     return $name;
 }
 
+sub clone ($self) {
+    return __PACKAGE__->new(
+        dir => $self->dir, path => $self->path, home => $self->home);
+}
+
 # Is this the page you're looking for?
 sub content_for ($self, $path) {
     return $self if $path eq '';

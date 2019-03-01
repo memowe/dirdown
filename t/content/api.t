@@ -40,7 +40,7 @@ subtest 'Content search' => sub {
     subtest 'F_oo page' => sub {
         my $page = $content->content_for('F_oo');
         ok defined($page), 'Got something back';
-        isa_ok $page => 'Dirdown::Content::Page';
+        isa_ok $page => 'Dirdown::Content::Page', 'Found page';
         is $page->dir => $content->dir, 'Correct content dir';
         is $page->path => $file_foo, 'Correct content path';
     };
@@ -48,7 +48,7 @@ subtest 'Content search' => sub {
     subtest 'bar/baz page' => sub {
         my $page = $content->content_for('bar/baz');
         ok defined($page), 'Got something back';
-        isa_ok $page => 'Dirdown::Content::Page';
+        isa_ok $page => 'Dirdown::Content::Page', 'Found page';
         is $page->dir => $content->dir, 'Correct content dir';
         is $page->path => $file_baz, 'Correct content path';
     };
@@ -56,7 +56,7 @@ subtest 'Content search' => sub {
     subtest 'bar page' => sub {
         my $page = $content->content_for('bar');
         ok defined($page), 'Got something back';
-        isa_ok $page => 'Dirdown::Content::Page';
+        isa_ok $page => 'Dirdown::Content::Page', 'Found page';
         is $page->dir => $content->dir, 'Correct content dir';
         is $page->path => $file_baz, 'Correct content path';
     };

@@ -80,23 +80,25 @@ sub content_for ($self, $path) {
 }
 
 sub navi_tree ($self, $parts = '__FULL__') {
+    my (@ps) = ($parts eq '__FULL__') ? 42 : @$parts;
+    my $next = shift @ps;
 
     # Full tree: nothing active, all children, "cloned"
-    my $tree = Dirdown::Content::Node->new(
-        dir => $self->dir, path => $self->path, home => $self->home
-    )->children->map(sub ($child) {
+    my $tree = $self->clone->children->map(sub ($child) {
         my $d = {path => $child->path_name, node => $child};
-        $d->{children} = $child->navi_tree unless $child->can('content');
+        $d->{children} = $child->navi_tree(\@ps)
+            unless $child->can('content');
     $d});
     return $tree if $parts eq '__FULL__';
 
-    # Partial tree: activate and kill other children
-    my $next_part = shift @$parts;
+    # Partial tree: activate
     return $tree->map(sub ($d) {
-        $d->{active} = 1        if $_->{path} eq $next_part;
-        delete $d->{children}   if $_->{path} ne $next_part;
-        return $d;
-    });
+        if (defined $next and $d->{path} eq $next) {
+            $d->{active}++;
+        } else {
+            delete $d->{children};
+        }
+    $d});
 }
 
 1;

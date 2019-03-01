@@ -3,13 +3,12 @@ use Mojo::Base -base, -signatures;
 
 use Carp;
 use Dirdown::Content::Node;
-use Mojo::File;
+use Mojo::Path;
 
 # Content list
-has dir         => sub {croak "No Dirdown directory 'dir' given!\n"};
-has home        => 'index';
-has navi_tree   => sub ($self) {$self->tree->navi_tree};
-has tree        => sub ($self) {Dirdown::Content::Node->new(
+has dir     => sub {croak "No Dirdown directory 'dir' given!\n"};
+has home    => 'index';
+has tree    => sub ($self) {Dirdown::Content::Node->new(
     dir => $self->dir, path => $self->dir, home => $self->home
 )};
 
@@ -20,13 +19,22 @@ sub content_for ($self, $path) {
     return $self->tree->content_for($path);
 }
 
-sub navi_tree_for ($self, $path) {
+sub navi_tree ($self, $path = '__FULL__') {
 
-    # Shorthand: nothing...
+    # Full tree?
+    return $self->tree->navi_tree if $path eq '__FULL__';
+
+    # Path exists?
     my $leaf = $self->content_for($path);
     return unless defined $leaf;
 
-    # TODO
+    # Home applicable?
+    my $parts = Mojo::Path->new($path)->parts;
+    push @$parts, $self->home
+        if $leaf->path_name eq $self->home and $parts->[-1] ne $self->home;
+
+    # Delegate
+    return $self->tree->navi_tree($parts);
 }
 
 1;

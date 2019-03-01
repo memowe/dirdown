@@ -65,20 +65,19 @@ subtest 'Content search' => sub {
 subtest Navigation => sub {
 
     subtest Tree => sub {
+        my $rt = $content->tree->children;
 
         subtest 'Full tree' => sub {
             my $nt = $content->navi_tree;
-            my $rt = $content->tree;
             ok defined($nt), 'Navi tree defined';
             is $nt->[0]{path} => 'F_oo', 'Correct first path';
-            ok $nt->[0]{node}->equals($rt->children->[0]),
+            ok $nt->[0]{node}->equals($rt->[0]),
                 'Correct first page';
             is $nt->[1]{path} => 'bar', 'Correct second path';
-            ok $nt->[1]{node}->equals($rt->children->[1]),
+            ok $nt->[1]{node}->equals($rt->[1]),
                 'Correct second dir';
             is $nt->[1]{children}[0]{path} => 'baz', 'Correct third path';
-            ok $nt->[1]{children}[0]{node}
-                ->equals($rt->children->[1]->children->[0]),
+            ok $nt->[1]{children}[0]{node}->equals($rt->[1]->children->[0]),
                 'Correct third page';
         };
 

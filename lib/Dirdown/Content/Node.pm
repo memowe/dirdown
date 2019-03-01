@@ -15,6 +15,7 @@ has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0] // 0};
 has path_name   => \&_path_name;
 has children    => \&_children;
 has children_hr => \&_children_hr;
+has navi_tree   => \&_navi_tree;
 
 sub _path_name ($self) {
     ($self->basename =~ /^  # start
@@ -72,6 +73,13 @@ sub content_for ($self, $path) {
 
     # Nothing found
     return;
+}
+
+sub _navi_tree ($self) {
+    return $self->children->map(sub ($child) {
+        my $d = {path => $child->path_name, node => $child};
+        $d->{children} = $child->navi_tree unless $child->can('content');
+    $d})->to_array;
 }
 
 1;

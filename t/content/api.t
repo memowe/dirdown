@@ -62,4 +62,46 @@ subtest 'Content search' => sub {
     };
 };
 
+subtest Navigation => sub {
+
+    subtest Tree => sub {
+
+        subtest 'Full tree' => sub {
+            my $nt = $content->navi_tree;
+            my $rt = $content->tree;
+            ok defined($nt), 'Navi tree defined';
+            is $nt->[0]{path} => 'F_oo', 'Correct first path';
+            ok $nt->[0]{node}->equals($rt->children->[0]),
+                'Correct first page';
+            is $nt->[1]{path} => 'bar', 'Correct second path';
+            ok $nt->[1]{node}->equals($rt->children->[1]),
+                'Correct second dir';
+            is $nt->[1]{children}[0]{path} => 'baz', 'Correct third path';
+            ok $nt->[1]{children}[0]{node}
+                ->equals($rt->children->[1]->children->[0]),
+                'Correct third page';
+        };
+
+        subtest 'Tree for...' => sub {
+
+            subtest Nothing => sub {
+                is $content->navi_tree_for(undef) => undef, 'undef';
+                is $content->navi_tree_for('xnorfzt') => undef, 'Unknown path';
+            };
+
+            subtest 'First level' => sub {
+                ok 1; # TODO
+            };
+
+            subtest 'Second level' => sub {
+                ok 1; # TODO
+            };
+        };
+    };
+
+    subtest Stack => sub {
+        ok 1; # TODO
+    };
+};
+
 done_testing;

@@ -66,9 +66,9 @@ subtest Navigation => sub {
 
     subtest Tree => sub {
         my $rt = $content->tree->children;
+        my $nt = $content->navi_tree;
 
         subtest 'Full tree' => sub {
-            my $nt = $content->navi_tree;
             ok defined($nt), 'Navi tree defined';
             is $nt->[0]{path} => 'F_oo', 'Correct first path';
             ok $nt->[0]{node}->equals($rt->[0]),
@@ -84,16 +84,39 @@ subtest Navigation => sub {
         subtest 'Tree for...' => sub {
 
             subtest Nothing => sub {
-                is $content->navi_tree_for(undef) => undef, 'undef';
-                is $content->navi_tree_for('xnorfzt') => undef, 'Unknown path';
+                is $content->navi_tree('') => undef, 'undef';
+                is $content->navi_tree('xnorfzt') => undef, 'Unknown path';
             };
 
             subtest 'First level' => sub {
-                ok 1; # TODO
+
+                subtest 'F_oo' => sub {
+                    my $ntf = $content->navi_tree('F_oo');
+                    ok defined($ntf), 'Navi tree defined';
+                    ok delete($ntf->[0]{active}), 'First entry active';
+                    is_deeply $ntf->[0] => $nt->[0], 'Same first entry';
+                    ok not(exists $ntf->[1]{children}),
+                        'Second without children';
+                    is $ntf->[1]{path} => 'bar', 'Correct second path';
+                    ok $ntf->[1]{node}->equals($nt->[1]{node}),
+                        'Correct second node';
+                };
+
+                subtest 'bar (home)' => sub {
+                    my $ntf = $content->navi_tree('bar');
+                    ok defined($nt), 'Navi tree defined';
+                    ok delete($ntf->[1]{active}), 'Second entry active';
+                    ok delete($ntf->[1]{children}[0]{active}), 'Leaf active';
+                    is_deeply $ntf => $nt, 'Correct rest of the tree';
+                };
             };
 
             subtest 'Second level' => sub {
-                ok 1; # TODO
+                my $ntf = $content->navi_tree('bar/baz');
+                ok defined($nt), 'Navi tree defined';
+                ok delete($ntf->[1]{active}), 'Second entry active';
+                ok delete($ntf->[1]{children}[0]{active}), 'Leaf active';
+                is_deeply $ntf => $nt, 'Correct rest of the tree';
             };
         };
     };

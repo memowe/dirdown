@@ -76,7 +76,25 @@ subtest Node => sub {
             my $child = $node->content_for('baz');
             isa_ok $child => 'Dirdown::Content::Page', "'baz' child";
             is $child->path => $file_baz, 'Correct child path';
-        }
+        };
+
+        subtest 'Navi tree' => sub {
+
+            subtest Full => sub {
+                my $fnt = $node->navi_tree;
+                ok defined($fnt), 'Full navi tree defined';
+                is scalar(@$fnt) => 1, 'One child found';
+                ok $fnt->[0]{node}->equals($node->children->[0]),
+                    'Correct child';
+            };
+
+            subtest Partial => sub {
+                my $fnt = $node->navi_tree(['baz']);
+                ok defined($fnt), 'Full navi tree defined';
+                ok delete($fnt->[0]{active}), 'Child is active';
+                is_deeply $fnt => $node->navi_tree, "That's it";
+            };
+        };
     };
 
     subtest 'File baz' => sub {

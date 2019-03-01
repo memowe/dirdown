@@ -15,7 +15,6 @@ has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0] // 0};
 has path_name   => \&_path_name;
 has children    => \&_children;
 has children_hr => \&_children_hr;
-has navi_tree   => \&_navi_tree;
 
 sub _path_name ($self) {
     ($self->basename =~ /^  # start
@@ -75,11 +74,24 @@ sub content_for ($self, $path) {
     return;
 }
 
-sub _navi_tree ($self) {
-    return $self->children->map(sub ($child) {
+sub navi_tree ($self, $parts = '__FULL__') {
+
+    # Full tree: nothing active, all children, "cloned"
+    my $tree = Dirdown::Content::Node->new(
+        dir => $self->dir, path => $self->path, home => $self->home
+    )->children->map(sub ($child) {
         my $d = {path => $child->path_name, node => $child};
         $d->{children} = $child->navi_tree unless $child->can('content');
-    $d})->to_array;
+    $d});
+    return $tree if $parts eq '__FULL__';
+
+    # Partial tree: activate and kill other children
+    my $next_part = shift @$parts;
+    return $tree->map(sub ($d) {
+        $d->{active} = 1        if $_->{path} eq $next_part;
+        delete $d->{children}   if $_->{path} ne $next_part;
+        return $d;
+    });
 }
 
 1;

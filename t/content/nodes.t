@@ -77,7 +77,25 @@ subtest Node => sub {
             my $child = $node->content_for('baz');
             isa_ok $child => 'Dirdown::Content::Page', "'baz' child";
             is $child->path => $file_baz, 'Correct child path';
-        }
+        };
+
+        subtest 'Navi tree' => sub {
+
+            subtest Full => sub {
+                my $fnt = $node->navi_tree;
+                ok defined($fnt), 'Full navi tree defined';
+                is scalar(@$fnt) => 1, 'One child found';
+                ok $fnt->[0]{node}->equals($node->children->[0]),
+                    'Correct child';
+            };
+
+            subtest Partial => sub {
+                my $fnt = $node->navi_tree(['baz']);
+                ok defined($fnt), 'Full navi tree defined';
+                ok delete($fnt->[0]{active}), 'Child is active';
+                is_deeply $fnt => $node->navi_tree, "That's it";
+            };
+        };
     };
 
     subtest 'File baz' => sub {
@@ -120,6 +138,15 @@ subtest Node => sub {
 
         $p1->dir(Mojo::Path->new('xnorfzt'));
         ok not($p1->equals($p2)), 'Different dir';
+    };
+
+    subtest 'Copy constructor' => sub {
+        my $node = Dirdown::Content::Node->new(
+            dir => $dir, path => $dir_bar);
+        my $clone = $node->clone;
+        isa_ok $clone => 'Dirdown::Content::Node', 'Cloned node';
+        ok $clone->equals($node), '"Equal"';
+        ok $clone != $node, 'Not the same';
     };
 };
 
@@ -177,6 +204,15 @@ subtest Page => sub {
         ok $p2->equals($p1), 'Same path, the other way round';
         ok not($p1->equals($p3)), 'Different path';
         ok not($p3->equals($p1)), 'Different path, the other way round';
+    };
+
+    subtest 'Copy constructor' => sub {
+        my $node = Dirdown::Content::Page->new(
+            dir => $dir, path => $file_foo);
+        my $clone = $node->clone;
+        isa_ok $clone => 'Dirdown::Content::Page', 'Cloned page';
+        ok $clone->equals($node), '"Equal"';
+        ok $clone != $node, 'Not the same';
     };
 };
 

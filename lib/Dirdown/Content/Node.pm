@@ -41,6 +41,11 @@ sub _children_hr ($self) {
     return { map {$_->path_name => $_} @{$self->children->to_array} };
 }
 
+sub clone ($self) {
+    return __PACKAGE__->new(
+        dir => $self->dir, path => $self->path, home => $self->home);
+}
+
 sub equals ($self, $other) {
         $self->dir->to_string eq $other->dir->to_string
     and $self->path->to_string eq $other->path->to_string;
@@ -72,6 +77,45 @@ sub content_for ($self, $path) {
 
     # Nothing found
     return;
+}
+
+sub navi_tree ($self, $parts = '__FULL__') {
+    my (@ps) = ($parts eq '__FULL__') ? 42 : @$parts;
+    my $next = shift @ps;
+
+    # Full tree: nothing active, all children, "cloned"
+    my $tree = $self->clone->children->map(sub ($child) {
+        my $d = {path => $child->path_name, node => $child};
+        $d->{children} = $child->navi_tree(\@ps)
+            unless $child->can('content');
+    $d});
+    return $tree if $parts eq '__FULL__';
+
+    # Partial tree: activate
+    return $tree->map(sub ($d) {
+        if (defined $next and $d->{path} eq $next) {
+            $d->{active}++;
+        } else {
+            delete $d->{children};
+        }
+    $d});
+}
+
+sub navi_stack ($self, $parts) {
+    my @ps   = @$parts;
+    my $next = shift @ps;
+
+    # Transform children
+    my $active;
+    my $level = $self->clone->children->map(sub ($child) {
+        my $d = {path => $child->path_name, node => $child};
+        if (defined $next and $child->path_name eq $next) {
+            $d->{active} = 1;
+            $active = $child unless $child->can('content');
+        }
+    $d})->to_array;
+
+    return ($level, defined($active) ? $active->navi_stack(\@ps) : ());
 }
 
 1;

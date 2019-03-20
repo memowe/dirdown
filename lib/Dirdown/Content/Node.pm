@@ -101,4 +101,21 @@ sub navi_tree ($self, $parts = '__FULL__') {
     $d});
 }
 
+sub navi_stack ($self, $parts) {
+    my @ps   = @$parts;
+    my $next = shift @ps;
+
+    # Transform children
+    my $active;
+    my $level = $self->clone->children->map(sub ($child) {
+        my $d = {path => $child->path_name, node => $child};
+        if (defined $next and $child->path_name eq $next) {
+            $d->{active} = 1;
+            $active = $child unless $child->can('content');
+        }
+    $d})->to_array;
+
+    return ($level, defined($active) ? $active->navi_stack(\@ps) : ());
+}
+
 1;

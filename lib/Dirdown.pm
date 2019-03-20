@@ -12,11 +12,10 @@ sub startup ($self) {
     $self->helper(dirdown => sub {
         my $dir = $ENV{DIRDOWN_CONTENT}
             // $self->home->rel_file('dirdown_content')->to_string;
-        state $dirdown = Dirdown::Content->new(
-            dir     => path($dir),
-            home    => $ENV{DIRDOWN_DIRECTORYHOME},
-        );
-    });
+        my $home = $ENV{DIRDOWN_DIRECTORYHOME};
+        state $dirdown = Dirdown::Content->new(dir => path($dir));
+        $dirdown->home($home) if defined $home;
+    $dirdown});
     $self->debug($ENV{DIRDOWN_DEBUGROUTE});
 
     # Custom templates

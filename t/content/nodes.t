@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Exception;
+use Mojo::Path;
 use Mojo::File 'tempdir';
 use Mojo::Util 'encode';
 use Text::Markdown 'markdown';
@@ -116,6 +117,9 @@ subtest Node => sub {
         ok $p2->equals($p1), 'Same path, the other way round';
         ok not($p1->equals($p3)), 'Different path';
         ok not($p3->equals($p1)), 'Different path, the other way round';
+
+        $p1->dir(Mojo::Path->new('xnorfzt'));
+        ok not($p1->equals($p2)), 'Different dir';
     };
 };
 

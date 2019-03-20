@@ -12,6 +12,9 @@ install:
     - cpanm -qn --skip-satisfied Devel::Cover::Report::Codecov
     - cpanm -qn --skip-satisfied Devel::Cover::Report::Coveralls
 
+script:
+    - prove -lvr
+
 after_success:
     - cover -test
     - cover -report codecov

@@ -8,9 +8,13 @@ use Mojo::Path;
 # Content list
 has dir     => sub {croak "No Dirdown directory 'dir' given!\n"};
 has home    => 'index';
-has tree    => sub ($self) {Dirdown::Content::Node->new(
+has tree    => \&_tree;
+
+sub _tree ($self) { Dirdown::Content::Node->new(
     dir => $self->dir, path => $self->dir, home => $self->home
-)};
+)}
+
+sub refresh ($self) {$self->tree($self->_tree)}
 
 sub full_tree ($self) {$self->tree->full_tree}
 

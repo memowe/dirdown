@@ -5,6 +5,7 @@ use Dirdown::Content;
 use Mojo::File 'path';
 
 has 'debug';
+has 'refresh';
 
 sub startup ($self) {
 
@@ -17,6 +18,7 @@ sub startup ($self) {
         $dirdown->home($home) if defined $home;
     $dirdown});
     $self->debug($ENV{DIRDOWN_DEBUGROUTE});
+    $self->refresh($ENV{DIRDOWN_REFRESH});
 
     # Custom templates
     my $tmpls = $ENV{DIRDOWN_TEMPLATES};
@@ -36,6 +38,7 @@ sub _serve ($c) {
     (my $path = $c->param('cpath') // '') =~ s/\.html//;
 
     # Try to find content
+    $c->dirdown->refresh if $c->app->refresh;
     my $page = $c->dirdown->content_for($path);
     return $c->reply->not_found unless defined $page;
 

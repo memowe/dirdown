@@ -171,4 +171,18 @@ subtest Navigation => sub {
     };
 };
 
+subtest Caching => sub {
+
+    subtest 'Caching works by default' => sub {
+        my $baz_content = $content->content_for('bar/baz')->content->{raw};
+        $file_baz->spurt('# New baz');
+        is $content->content_for('bar/baz')->content->{raw}
+            => $baz_content, 'Old baz content';
+        $content->refresh;
+        is $content->content_for('bar/baz')->content->{raw}
+            => '# New baz', 'New baz content';
+        $file_baz->spurt($baz_content); # clean up
+    };
+};
+
 done_testing;

@@ -21,6 +21,13 @@ subtest 'No debug' => sub {
     my $t = Test::Mojo->new('Dirdown');
     $t->get_ok('/debug')->status_is(404); # No debug route
     $t->get_ok('/F_oo')->status_is(200)->text_is(h1 => 'Foo');
+
+    subtest Cache => sub {
+        my $foo_content = $file_foo->slurp;
+        $file_foo->spurt('# New foo');
+        $t->get_ok('/F_oo')->text_is(h1 => 'Foo');
+        $file_foo->spurt($foo_content);
+    };
 };
 
 subtest Configured => sub {
@@ -28,6 +35,7 @@ subtest Configured => sub {
     local $ENV{DIRDOWN_CONTENT}         = $dir;
     local $ENV{DIRDOWN_DEBUGROUTE}      = '/xnorfzt';
     local $ENV{DIRDOWN_DIRECTORYHOME}   = 'baz';
+    local $ENV{DIRDOWN_REFRESH}         = 1;
     my $t = Test::Mojo->new('Dirdown');
 
     subtest Debug => sub {
@@ -55,6 +63,13 @@ subtest Configured => sub {
         $t->get_ok('/F_oo')->status_is(200)->text_is(h1 => 'Foo');
         $t->get_ok('/bar/baz')->status_is(200)->text_is(h1 => 'B! A! Z!');
         $t->get_ok('/bar')->status_is(200)->text_is(h1 => 'B! A! Z!');
+    };
+
+    subtest Cache => sub {
+        my $foo_content = $file_foo->slurp;
+        $file_foo->spurt('# New foo');
+        $t->get_ok('/F_oo')->text_is(h1 => 'New foo');
+        $file_foo->spurt($foo_content);
     };
 };
 

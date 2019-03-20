@@ -40,9 +40,16 @@ sub _serve ($c) {
     my $page = $c->dirdown->content_for($path);
     return $c->reply->not_found unless defined $page;
 
+    # Collect data
+    $c->stash(
+        page        => $page,
+        navi_tree   => $c->dirdown->navi_tree($path),
+        navi_stack  => $c->dirdown->navi_stack($path),
+    );
+
     # Serve
-    $c->render(page => $page, template =>
-        (defined $c->app->debug) ? 'dirdown_page_debug' : 'dirdown_page'
+    $c->render(template => (defined $c->app->debug) ?
+        'dirdown_page_debug' : 'dirdown_page'
     );
 }
 

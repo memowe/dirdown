@@ -11,9 +11,9 @@
     <li id="dirdown_debug_meta"><strong><code>$page->meta</code></strong>:
         <blockquote><pre><%= dumper $page->meta %></pre></blockquote></li>
     <li id="dirdown_debug_navi_tree"><strong><code>$navi_tree</code></strong>:
-        <blockquote><pre>TODO</pre></blockquote></li>
+        <blockquote><pre><%= dumper $navi_tree %></pre></blockquote></li>
     <li id="dirdown_debug_navi_stack"><strong><code>$navi_stack</code></strong>:
-        <blockquote><pre>TODO</pre></blockquote></li>
+        <blockquote><pre><%= dumper $navi_stack %></pre></blockquote></li>
     <li><strong><code>$page->html</code></strong> below</li>
 </ul>
 

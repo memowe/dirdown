@@ -15,7 +15,6 @@ my $file_foo    = $dir      ->child('1_F_oo.md')->spurt('# Foo');
 my $dir_bar     = $dir      ->child('2_bar')->make_path;
 my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# B! A! Z!');
 
-
 subtest 'No debug' => sub {
     local $ENV{DIRDOWN_CONTENT} = $dir;
     my $t = Test::Mojo->new('Dirdown');

@@ -35,7 +35,8 @@ sub navi_tree ($self, $path = '__FULL__') {
     # Home applicable?
     my $parts = Mojo::Path->new($path)->parts;
     push @$parts, $self->home
-        if $leaf->path_name eq $self->home and $parts->[-1] ne $self->home;
+        if $leaf->path_name eq $self->home
+            and @$parts and $parts->[-1] ne $self->home;
 
     # Delegate
     return $self->tree->navi_tree($parts);
@@ -50,7 +51,8 @@ sub navi_stack ($self, $path = undef) {
     # Home applicable?
     my $parts = Mojo::Path->new($path)->parts;
     push @$parts, $self->home
-        if $leaf->path_name eq $self->home and $parts->[-1] ne $self->home;
+        if $leaf->path_name eq $self->home
+            and @$parts and $parts->[-1] ne $self->home;
 
     # Delegate
     return [$self->tree->navi_stack($parts)];

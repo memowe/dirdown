@@ -25,16 +25,12 @@ sub _path_name ($self) {
 }
 
 sub _children ($self) {
-    opendir my $dh, $self->path or return Mojo::Collection->new;
-    return Mojo::Collection->new(readdir $dh)
-        ->grep(sub ($name) {$name !~ /^\.\.?$/})
-        ->map(sub ($name) {
-            my $path = $self->path->child($name);
-            my %args = (path => $path, dir => $self->dir, home => $self->home);
-            return (-f $path)
-                ? Dirdown::Content::Page->new(%args)
-                : Dirdown::Content::Node->new(%args);
-        })->sort(sub {$a->sort_val <=> $b->sort_val});
+    return Mojo::Collection->new unless -d $self->path;
+    return $self->path->list({dir => 1})->map(sub ($path) {
+        my %args = (path => $path, dir => $self->dir, home => $self->home);
+        return Dirdown::Content::Page->new(%args) if -f $path;
+        return Dirdown::Content::Node->new(%args);
+    })->sort(sub {$a->sort_val <=> $b->sort_val});
 }
 
 sub _children_hr ($self) {

@@ -1,0 +1,7 @@
+#!/usr/bin/env perl
+use Mojolicious::Lite;
+plugin Dirdown => {
+    prefix  => '/',
+    dir     => app->home->rel_file('dirdown_content'),
+};
+app->start;

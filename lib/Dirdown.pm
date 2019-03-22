@@ -20,6 +20,11 @@ sub startup ($self) {
     $self->debug($ENV{DIRDOWN_DEBUGROUTE});
     $self->refresh($ENV{DIRDOWN_REFRESH});
 
+    # Our static files/templates
+    my $res = path(__FILE__)->sibling('Dirdown')->child('resources');
+    push @{$self->app->static->paths}, $res->child('public')->to_string;
+    push @{$self->app->renderer->paths}, $res->child('templates')->to_string;
+
     # Custom templates
     my $tmpls = $ENV{DIRDOWN_TEMPLATES};
     unshift @{$self->renderer->paths}, $tmpls if defined $tmpls;

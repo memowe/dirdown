@@ -7,17 +7,17 @@ Minimal file-system based CMS
 [![Codecov test coverage](https://codecov.io/gh/memowe/dirdown/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/dirdown)
 [![Coveralls test coverage](https://coveralls.io/repos/github/memowe/dirdown/badge.svg?branch=master)](https://coveralls.io/github/memowe/dirdown?branch=master)
 
-## Work directly in the project:
+## Generate a new dirdown web application
 
-1. Edit `dirdown_content` pages (don't forget a home page like `index.md`)
-2. Start the server via
+1. Invoke the generator
     ```bash
-    $ script/dirdown daemon
-    Server available at http://127.0.0.1:3000
+    $ mojo generate dirdown_app
     ```
-3. Store static pages
+2. Edit the markdown content in `dirdown_content`.
+3. Start the server via
     ```bash
-    $ wget -rk http://127.0.0.1:3000/
+    $ morbo dirdown
+    Server available at http://127.0.0.1:3000
     ```
 
 ## Use it as a plugin for your own Mojolicious web apps:
@@ -25,13 +25,11 @@ Minimal file-system based CMS
 ```perl
 #!/usr/bin/env perl
 use Mojolicious::Lite;
-use lib app->home->rel_file('lib')->to_string;
 
+# Load the dirdown CMS under /content
 plugin Dirdown => {
-    dir     => app->home->rel_file('content'),
     prefix  => '/content',
-    home    => 'index',
-    debug   => '/debug',
+    dir     => app->home->rel_file('dirdown_content'),
 };
 
 get '/' => {text => 'Hello world!'};

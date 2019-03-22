@@ -18,6 +18,9 @@ sub run ($self) {
         $self->create_rel_dir($target->dirname);
         $file->copy_to($target);
     });
+
+    # Make sure the web app is executable
+    $self->chmod_rel_file('dirdown', 0755);
 }
 
 1;

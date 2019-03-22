@@ -36,6 +36,8 @@ subtest Generate => sub {
             'Correct file contents';
     };
 
+    ok -x path($dir, 'dirdown'), 'Web app is executable';
+
     chdir $cwd;
 };
 

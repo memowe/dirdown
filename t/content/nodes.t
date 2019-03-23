@@ -23,18 +23,18 @@ MD
 ### Preparations done
 
 subtest Node => sub {
-    use_ok 'Dirdown::Content::Node';
+    use_ok 'Dirdown::Node';
 
     subtest 'Invalid arguments' => sub {
-        my $no = Dirdown::Content::Node->new;
+        my $no = Dirdown::Node->new;
         throws_ok {$no->dir} qr/^No 'dir' given\b/, 'Correct dir exception';
         throws_ok {$no->path} qr/^No 'path' given\b/, 'Correct path exception';
     };
 
     subtest 'File foo' => sub {
 
-        my $node = Dirdown::Content::Node->new(dir => $dir, path => $file_foo);
-        isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+        my $node = Dirdown::Node->new(dir => $dir, path => $file_foo);
+        isa_ok $node => 'Dirdown::Node', 'Constructed node object';
 
         subtest 'Basic data' => sub {
             is $node->rel_path => '1_F_oo.md', 'Correct rel_path';
@@ -52,8 +52,8 @@ subtest Node => sub {
 
     subtest 'Directory bar' => sub {
 
-        my $node = Dirdown::Content::Node->new(dir => $dir, path => $dir_bar);
-        isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+        my $node = Dirdown::Node->new(dir => $dir, path => $dir_bar);
+        isa_ok $node => 'Dirdown::Node', 'Constructed node object';
 
         subtest 'Basic data' => sub {
             is $node->rel_path => '2_bar', 'Correct rel_path';
@@ -67,7 +67,7 @@ subtest Node => sub {
             isa_ok $node->children, 'Mojo::Collection', 'Children';
             is $node->children->size => 1, 'One child';
             my $child = $node->children->[0];
-            isa_ok $child, 'Dirdown::Content::Page', 'First child';
+            isa_ok $child, 'Dirdown::Page', 'First child';
             is $child->path => $file_baz, 'Correct child path';
         };
 
@@ -75,7 +75,7 @@ subtest Node => sub {
             is $node->content_for(undef) => undef, 'No content for undef';
             is $node->content_for('') => undef, "No content for ''";
             my $child = $node->content_for('baz');
-            isa_ok $child => 'Dirdown::Content::Page', "'baz' child";
+            isa_ok $child => 'Dirdown::Page', "'baz' child";
             is $child->path => $file_baz, 'Correct child path';
         };
 
@@ -100,8 +100,8 @@ subtest Node => sub {
 
     subtest 'File baz' => sub {
 
-        my $node = Dirdown::Content::Node->new(dir => $dir, path => $file_baz);
-        isa_ok $node => 'Dirdown::Content::Node', 'Constructed node object';
+        my $node = Dirdown::Node->new(dir => $dir, path => $file_baz);
+        isa_ok $node => 'Dirdown::Node', 'Constructed node object';
 
         subtest 'Basic data' => sub {
             is $node->rel_path => '2_bar/baz.md', 'Correct rel_path';
@@ -119,7 +119,7 @@ subtest Node => sub {
     };
 
     subtest 'Directory home' => sub {
-        my $dir = Dirdown::Content::Node->new(
+        my $dir = Dirdown::Node->new(
             dir => $dir, path => $dir_bar, home => 'baz'
         );
         is $dir->content_for('') => $dir->content_for('baz'),
@@ -128,7 +128,7 @@ subtest Node => sub {
 
     subtest Equality => sub {
         my ($p1, $p2, $p3) = map {
-            Dirdown::Content::Node->new(dir => $dir, path => $_)
+            Dirdown::Node->new(dir => $dir, path => $_)
         } $dir_bar, $dir_bar, $file_baz;
 
         ok $p1->equals($p2), 'Same path';
@@ -141,22 +141,22 @@ subtest Node => sub {
     };
 
     subtest 'Copy constructor' => sub {
-        my $node = Dirdown::Content::Node->new(
+        my $node = Dirdown::Node->new(
             dir => $dir, path => $dir_bar);
         my $clone = $node->clone;
-        isa_ok $clone => 'Dirdown::Content::Node', 'Cloned node';
+        isa_ok $clone => 'Dirdown::Node', 'Cloned node';
         ok $clone->equals($node), '"Equal"';
         ok $clone != $node, 'Not the same';
     };
 };
 
 subtest Page => sub {
-    isa_ok 'Dirdown::Content::Page' => 'Dirdown::Content::Node';
+    isa_ok 'Dirdown::Page' => 'Dirdown::Node';
 
     subtest 'File foo' => sub {
 
-        my $page = Dirdown::Content::Page->new(dir => $dir, path => $file_foo);
-        isa_ok $page => 'Dirdown::Content::Page', 'Constructed page object';
+        my $page = Dirdown::Page->new(dir => $dir, path => $file_foo);
+        isa_ok $page => 'Dirdown::Page', 'Constructed page object';
 
         is_deeply $page->content => {
             raw         => '# Foo',
@@ -173,8 +173,8 @@ subtest Page => sub {
 
     subtest 'File baz' => sub {
 
-        my $page = Dirdown::Content::Page->new(dir => $dir, path => $file_baz);
-        isa_ok $page => 'Dirdown::Content::Page', 'Constructed page object';
+        my $page = Dirdown::Page->new(dir => $dir, path => $file_baz);
+        isa_ok $page => 'Dirdown::Page', 'Constructed page object';
 
         subtest 'Raw content' => sub {
             my $raw = encode 'UTF-8' =>
@@ -197,7 +197,7 @@ subtest Page => sub {
 
     subtest Equality => sub {
         my ($p1, $p2, $p3) = map {
-            Dirdown::Content::Page->new(dir => $dir, path => $_)
+            Dirdown::Page->new(dir => $dir, path => $_)
         } $file_foo, $file_foo, $file_baz;
 
         ok $p1->equals($p2), 'Same path';
@@ -207,10 +207,10 @@ subtest Page => sub {
     };
 
     subtest 'Copy constructor' => sub {
-        my $node = Dirdown::Content::Page->new(
+        my $node = Dirdown::Page->new(
             dir => $dir, path => $file_foo);
         my $clone = $node->clone;
-        isa_ok $clone => 'Dirdown::Content::Page', 'Cloned page';
+        isa_ok $clone => 'Dirdown::Page', 'Cloned page';
         ok $clone->equals($node), '"Equal"';
         ok $clone != $node, 'Not the same';
     };

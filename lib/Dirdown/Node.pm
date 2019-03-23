@@ -1,9 +1,9 @@
-package Dirdown::Content::Node;
+package Dirdown::Node;
 use Mojo::Base -base, -signatures;
 
 use Carp;
 use Mojo::Collection;
-use Dirdown::Content::Page;
+use Dirdown::Page;
 
 has dir         => sub {croak "No 'dir' given!\n"};
 has path        => sub {croak "No 'path' given!\n"};
@@ -28,8 +28,8 @@ sub _children ($self) {
     return Mojo::Collection->new unless -d $self->path;
     return $self->path->list({dir => 1})->map(sub ($path) {
         my %args = (path => $path, dir => $self->dir, home => $self->home);
-        return Dirdown::Content::Page->new(%args) if -f $path;
-        return Dirdown::Content::Node->new(%args);
+        return Dirdown::Page->new(%args) if -f $path;
+        return Dirdown::Node->new(%args);
     })->sort(sub {$a->sort_val <=> $b->sort_val});
 }
 

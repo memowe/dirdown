@@ -13,15 +13,15 @@ my $dir_bar     = $dir      ->child('2_bar')->make_path;
 my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# Baz');
 ### Preparations done
 
-use_ok 'Dirdown::Content';
+use_ok 'Dirdown';
 
 subtest 'Invalid arguments' => sub {
-    my $no = Dirdown::Content->new;
+    my $no = Dirdown->new;
     throws_ok {$no->dir} qr/^No Dirdown directory 'dir' given\b/,
         'Correct dir exception';
 };
 
-my $content = Dirdown::Content->new(dir => $dir, home => 'baz');
+my $content = Dirdown->new(dir => $dir, home => 'baz');
 
 subtest 'Tree construction' => sub {
     isa_ok $content->tree   => 'Dirdown::Node', 'Tree';

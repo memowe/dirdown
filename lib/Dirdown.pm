@@ -1,63 +1,61 @@
 package Dirdown;
-use Mojo::Base 'Mojolicious', -signatures;
+use Mojo::Base -base, -signatures;
 
-use Dirdown::Content;
-use Mojo::File 'path';
+use Carp;
+use Dirdown::Node;
+use Mojo::Path;
 
-has 'debug';
-has 'refresh';
+# Content list
+has dir     => sub {croak "No Dirdown directory 'dir' given!\n"};
+has home    => 'index';
+has tree    => \&_tree;
 
-sub startup ($self) {
+sub _tree ($self) { Dirdown::Node->new(
+    dir => $self->dir, path => $self->dir, home => $self->home
+)}
 
-    # Prepare
-    $self->helper(dirdown => sub {
-        my $dir = $ENV{DIRDOWN_CONTENT}
-            // $self->home->rel_file('dirdown_content')->to_string;
-        my $home = $ENV{DIRDOWN_DIRECTORYHOME};
-        state $dirdown = Dirdown::Content->new(dir => path($dir));
-        $dirdown->home($home) if defined $home;
-    $dirdown});
-    $self->debug($ENV{DIRDOWN_DEBUGROUTE});
-    $self->refresh($ENV{DIRDOWN_REFRESH});
+sub refresh ($self) {$self->tree($self->_tree)}
 
-    # Our static files/templates
-    my $res = path(__FILE__)->sibling('Dirdown')->child('resources');
-    push @{$self->app->static->paths}, $res->child('public')->to_string;
-    push @{$self->app->renderer->paths}, $res->child('templates')->to_string;
+sub full_tree ($self) {$self->tree->full_tree}
 
-    # Custom templates
-    my $tmpls = $ENV{DIRDOWN_TEMPLATES};
-    unshift @{$self->renderer->paths}, $tmpls if defined $tmpls;
-
-    # Routes
-    my $r = $self->routes;
-    $r->get($self->debug)->name('dirdown_debug') if defined $self->debug;
-    $r->get('/*cpath')->to(cb => \&_serve)->name('dirdown_page');
-    $r->get('/')->to(cb => \&_serve);
+# Try to find a content page
+sub content_for ($self, $path) {
+    return $self->tree->content_for($path);
 }
 
-# Try to be a controller
-sub _serve ($c) {
+sub navi_tree ($self, $path = '__FULL__') {
 
-    # Prepare path
-    (my $path = $c->param('cpath') // '') =~ s/\.html//;
+    # Full tree?
+    return $self->tree->navi_tree if $path eq '__FULL__';
 
-    # Try to find content
-    $c->dirdown->refresh if $c->app->refresh;
-    my $page = $c->dirdown->content_for($path);
-    return $c->reply->not_found unless defined $page;
+    # Path exists?
+    my $leaf = $self->content_for($path);
+    return unless defined $leaf;
 
-    # Collect data
-    $c->stash(
-        page        => $page,
-        navi_tree   => $c->dirdown->navi_tree($path),
-        navi_stack  => $c->dirdown->navi_stack($path),
-    );
+    # Home applicable?
+    my $parts = Mojo::Path->new($path)->parts;
+    push @$parts, $self->home
+        if $leaf->path_name eq $self->home
+            and @$parts and $parts->[-1] ne $self->home;
 
-    # Serve
-    $c->render(template => (defined $c->app->debug) ?
-        'dirdown_page_debug' : 'dirdown_page'
-    );
+    # Delegate
+    return $self->tree->navi_tree($parts);
+}
+
+sub navi_stack ($self, $path = undef) {
+
+    # Path exists?
+    my $leaf = $self->content_for($path);
+    return unless defined $leaf;
+
+    # Home applicable?
+    my $parts = Mojo::Path->new($path)->parts;
+    push @$parts, $self->home
+        if $leaf->path_name eq $self->home
+            and @$parts and $parts->[-1] ne $self->home;
+
+    # Delegate
+    return [$self->tree->navi_stack($parts)];
 }
 
 1;

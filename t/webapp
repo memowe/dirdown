@@ -1,0 +1,4 @@
+#!/usr/bin/env perl
+use Mojolicious::Lite;
+plugin 'Dirdown';
+app->start;

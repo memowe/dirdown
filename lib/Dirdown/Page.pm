@@ -1,5 +1,5 @@
-package Dirdown::Content::Page;
-use Mojo::Base 'Dirdown::Content::Node', -signatures;
+package Dirdown::Page;
+use Mojo::Base 'Dirdown::Node', -signatures;
 
 use Carp;
 use Text::Markdown 'markdown';

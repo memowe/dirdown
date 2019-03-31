@@ -17,6 +17,10 @@ Minimal file-system based CMS
     $ morbo dirdown
     Server available at http://127.0.0.1:3000
     ```
+4. Dump the content as static files via
+    ```bash
+    $ ./dirdown dump
+    ```
 
 ## Use it as a plugin for your own Mojolicious web apps:
 

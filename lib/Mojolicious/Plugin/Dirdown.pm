@@ -16,8 +16,10 @@ sub register ($self, $app, $conf) {
 
     # Prepare dirdown helper
     $app->helper(dirdown => sub {
-        my %args = (dir => path($env{content} // $conf->{dir}));
+        my %args = ();
+        my $dir  = $env{content} // $conf->{dir};
         my $home = $env{directoryhome} // $conf->{home};
+        $args{dir}  = path($dir) if defined $dir;
         $args{home} = $home if defined $home;
         state $dirdown = Dirdown->new(%args);
     });

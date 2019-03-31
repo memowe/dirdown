@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Mojo;
+use Test::Exception;
 use Mojo::File 'path', 'tempdir';
 
 # Silence
@@ -89,6 +90,49 @@ subtest 'No cache' => sub {
     $file_foo->spurt('# New foo');
     $t->get_ok('/pages/F_oo')->text_is(h1 => 'New foo');
     $file_foo->spurt($foo_content);
+};
+
+subtest 'Configuration hash' => sub {
+    delete local $ENV{DIRDOWN_CONTENT}; # override previous definition
+
+    my $dir = tempdir;
+    $dir->child('foo.md')->spurt('# Foo 42');
+    $dir->child('t')->make_path->child('dirdown_page_debug.html.ep')
+        ->spurt('<%== $page->html %><footer>xnorfzt</footer>');
+
+    my $t = do {
+        local $ENV{DDT_DIR}         = $dir;
+        local $ENV{DDT_HOME}        = 'foo';
+        local $ENV{DDT_DEBUG}       = 'bar';
+        local $ENV{DDT_PREFIX}      = 'baz';
+        local $ENV{DDT_REFRESH}     = 1;
+        local $ENV{DDT_TEMPLATES}   = $dir->child('t');
+        Test::Mojo->new(path(__FILE__)->sibling('webapp_conf'));
+    };
+
+    is $t->app->dirdown->dir => $dir->to_string, 'Correct dir';
+    is $t->app->dirdown->home => 'foo', 'Correct home';
+    is $t->app->url_for('dirdown_debug') => '/baz/bar',
+        'Correct prefix and debug route';
+    $t->get_ok('/baz/')->text_is(h1 => 'Foo 42')->text_is(footer => 'xnorfzt');
+
+    subtest Refresh => sub {
+        my $foo = $t->get_ok('/baz/foo')->tx->res->body;
+        $dir->child('foo.md')->spurt('# Foo 17');
+        $t->get_ok('/baz/foo')->content_isnt($foo);
+    };
+};
+
+subtest 'Empty configuration hash' => sub {
+    delete local $ENV{DIRDOWN_CONTENT};
+    my $t = Test::Mojo->new(path(__FILE__)->sibling('webapp_conf'));
+
+    throws_ok {$t->app->dirdown->dir} qr/^No Dirdown directory 'dir' given\b/,
+        'Correct directory exception';
+    is $t->app->dirdown->home => 'index', 'Correct home';
+    is $t->app->url_for('dirdown_debug') => 'dirdown_debug',
+        'Correct prefix and debug route';
+    $t->get_ok('/')->status_is(404);
 };
 
 done_testing;

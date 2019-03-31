@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+use Mojolicious::Lite;
+plugin Dirdown => {
+    dir         => $ENV{DDT_DIR},
+    home        => $ENV{DDT_HOME},
+    debug       => $ENV{DDT_DEBUG},
+    prefix      => $ENV{DDT_PREFIX},
+    refresh     => $ENV{DDT_REFRESH},
+    templates   => $ENV{DDT_TEMPLATES},
+};
+app->start;

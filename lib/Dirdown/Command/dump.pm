@@ -32,7 +32,7 @@ sub run ($self) {
         my $url = $self->app->url_for('dirdown_page', cpath => $path);
         my $tx  = $tr->tx(get => $url);
         $self->app->handler($tx);
-        $self->write_rel_file($target->child($path), $tx->res->body);
+        $self->write_rel_file($target->child("$path.html"), $tx->res->body);
     });
 }
 

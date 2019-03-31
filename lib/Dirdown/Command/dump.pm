@@ -20,6 +20,11 @@ sub run ($self) {
     # Static websites directory
     $self->create_rel_dir(my $target = path('dump'));
 
+    # Static resources directory
+    path($_)->list_tree->each(sub ($f, $) {
+        $f->copy_to($target->child($f->to_rel($_)));
+    }) for @{$self->app->static->paths};
+
     # Request each page
     local $ENV{MOJO_LOG_LEVEL} = 'error';
     my $tr = Mojo::UserAgent::Transactor->new;

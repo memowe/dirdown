@@ -4,8 +4,6 @@ Dirdown
 Minimal file-system based CMS
 
 [![Travis CI tests](https://travis-ci.org/memowe/dirdown.svg?branch=master)](https://travis-ci.org/memowe/dirdown)
-[![Codecov test coverage](https://codecov.io/gh/memowe/dirdown/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/dirdown)
-[![Coveralls test coverage](https://coveralls.io/repos/github/memowe/dirdown/badge.svg?branch=master)](https://coveralls.io/github/memowe/dirdown?branch=master)
 
 ## Generate a new dirdown web application
 

@@ -63,14 +63,19 @@ sub _serve ($self, $c) {
 
     # Collect data
     $c->stash(
+        page_path   => $path,
         page        => $page,
         navi_tree   => $c->dirdown->navi_tree($path),
         navi_stack  => $c->dirdown->navi_stack($path),
     );
 
-    # Serve
-    $c->render(template => (defined $self->debug) ?
-        'dirdown_page_debug' : 'dirdown_page'
+    # Serve a directory listing
+    return $c->render(dir => $page, template => 'dirdown_listing')
+        unless $page->isa('Dirdown::Page');
+
+    # Serve a page
+    $c->render(page => $page, template => (defined $self->debug) ?
+        'dirdown_page_debug' : 'dirdown_page',
     );
 }
 

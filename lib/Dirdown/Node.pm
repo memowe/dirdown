@@ -71,6 +71,9 @@ sub content_for ($self, $path) {
     return $self->children_hr->{$self->home}
         if $next_part eq '' and exists $self->children_hr->{$self->home};
 
+    # Nothing found, path is empty: return the node
+    return $self if $next_part eq '';
+
     # Nothing found
     return;
 }

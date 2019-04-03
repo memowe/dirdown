@@ -34,7 +34,8 @@ subtest 'Tree construction' => sub {
 };
 
 subtest 'Content search' => sub {
-    is $content->content_for('') => undef, "Nothing found for ''";
+    is $content->content_for('') => $content->tree,
+        "Directory listing for ''";
     is $content->content_for('xnorfzt') => undef, "Nothing found for 'xnorfzt'";
 
     subtest 'F_oo page' => sub {
@@ -83,12 +84,20 @@ subtest Navigation => sub {
 
         subtest 'Tree for...' => sub {
 
-            subtest Nothing => sub {
-                is $content->navi_tree('') => undef, 'undef';
-                is $content->navi_tree('xnorfzt') => undef, 'Unknown path';
-            };
+            is $content->navi_tree('xnorfzt') => undef, 'Unknown path: nothing';
 
             subtest 'First level' => sub {
+
+                subtest '(empty)' => sub {
+                    my $ntf = $content->navi_tree('');
+                    ok defined($ntf), 'Navi tree defined';
+                    is_deeply $ntf->[0] => $nt->[0], 'Same first entry';
+                    ok not(exists $ntf->[1]{children}),
+                        'Second without children';
+                    is $ntf->[1]{path} => 'bar', 'Correct second path';
+                    ok $ntf->[1]{node}->equals($nt->[1]{node}),
+                        'Correct second node';
+                };
 
                 subtest 'F_oo' => sub {
                     my $ntf = $content->navi_tree('F_oo');
@@ -124,13 +133,25 @@ subtest Navigation => sub {
     subtest Stack => sub {
         my $nt = $content->navi_tree;
 
-        subtest Nothing => sub {
-            is $content->navi_stack            => undef, 'No path given';
-            is $content->navi_stack('')        => undef, 'Empty string';
-            is $content->navi_stack('xnorfzt') => undef, 'Unknown path';
-        };
+        is $content->navi_stack('xnorfzt') => undef, 'Unknown path: nothing';
 
         subtest 'First level' => sub {
+
+            subtest '(empty)' => sub {
+                my $nst = $content->navi_stack('');
+                ok defined($nst), 'Navi stack defined';
+                is scalar(@$nst) => 1, 'Only 1 level';
+                is scalar(@{$nst->[0]}) => 2, 'Two children';
+                is_deeply $nst->[0][0] => $nt->[0], 'Same first entry';
+                ok not(exists $nst->[0][1]{children}),
+                    'Second without children';
+                is $nst->[0][1]{path} => 'bar', 'Correct second path';
+                ok $nst->[0][1]{node}->equals($nt->[1]{node}),
+                    'Correct second node';
+
+                is_deeply $content->navi_stack => $content->navi_stack(''),
+                    'No path given is like empty string';
+            };
 
             subtest 'F_oo' => sub {
                 my $nst = $content->navi_stack('F_oo');

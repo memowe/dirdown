@@ -63,6 +63,7 @@ sub _serve ($self, $c) {
 
     # Collect data
     $c->stash(
+        page_path   => $path,
         page        => $page,
         navi_tree   => $c->dirdown->navi_tree($path),
         navi_stack  => $c->dirdown->navi_stack($path),

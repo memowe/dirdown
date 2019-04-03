@@ -27,10 +27,15 @@ subtest 'Standard web app' => sub {
     $t->get_ok('/x/debug')->status_is(404);
 
     subtest Content => sub {
-        $t->get_ok('/x')->status_is(404);
         $t->get_ok('/x/F_oo')->status_is(200)->text_is(h1 => 'Foo');
         $t->get_ok('/x/bar/baz')->status_is(200)->text_is(h1 => 'B! A! Z!');
         $t->get_ok('/x/bar')->status_is(200)->text_is(h1 => 'B! A! Z!');
+    };
+
+    subtest 'Directory listing' => sub {
+        $t->get_ok('/x')->status_is(200)
+            ->text_is('li:first-child a[href="/x/F_oo"]' => 'F_oo')
+            ->text_is('li:nth-child(2) a[href="/x/bar"]' => 'bar');
     };
 
     subtest Cache => sub {

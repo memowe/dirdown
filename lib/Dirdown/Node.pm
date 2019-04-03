@@ -5,6 +5,7 @@ use Carp;
 use Mojo::Collection;
 use Dirdown::Page;
 
+has _parent     => ();
 has dir         => sub {croak "No 'dir' given!\n"};
 has path        => sub {croak "No 'path' given!\n"};
 has home        => 'index';
@@ -13,6 +14,7 @@ has path_parts  => sub ($self) {$self->rel_path->to_array};
 has basename    => sub ($self) {$self->path_parts->[-1]};
 has sort_val    => sub ($self) {($self->basename =~ /^(\d+)_/)[0] // 0};
 has path_name   => \&_path_name;
+has name        => \&_name;
 has children    => \&_children;
 has children_hr => \&_children_hr;
 
@@ -24,10 +26,14 @@ sub _path_name ($self) {
     $/x)[0];                # end of string
 }
 
+sub _name ($self) {
+}
+
 sub _children ($self) {
     return Mojo::Collection->new unless -d $self->path;
     return $self->path->list({dir => 1})->map(sub ($path) {
-        my %args = (path => $path, dir => $self->dir, home => $self->home);
+        my %args = (_parent => $self,
+            path => $path, dir => $self->dir, home => $self->home);
         return Dirdown::Page->new(%args) if -f $path;
         return Dirdown::Node->new(%args);
     })->sort(sub {$a->sort_val <=> $b->sort_val});
@@ -78,13 +84,43 @@ sub content_for ($self, $path) {
     return;
 }
 
+sub navi_name ($self) {
+
+    # Try to get it from our meta
+    if ($self->can('meta')) {
+        my $m = $self->meta;
+        return $m->{navi_name}  if exists $m->{navi_name};
+        return $m->{name}       if exists $m->{name};
+    }
+
+    # I'm the home page
+    return $self->_parent->navi_name
+        if $self->path_name eq $self->home and defined $self->_parent;
+
+    # Try to get it from home page
+    my $chome = $self->children_hr->{$self->home};
+    if (defined $chome and $chome->can('meta')) {
+        my $m = $chome->meta;
+        return $m->{navi_name}  if exists $m->{navi_name};
+        return $m->{name}       if exists $m->{name};
+    }
+
+    # Derive it from our path name
+    (my $name = $self->path_name) =~ s/_/ /g;
+    return $name;
+}
+
 sub navi_tree ($self, $parts = '__FULL__') {
     my (@ps) = ($parts eq '__FULL__') ? 42 : @$parts;
     my $next = shift @ps;
 
     # Full tree: nothing active, all children, "cloned"
     my $tree = $self->clone->children->map(sub ($child) {
-        my $d = {path => $child->path_name, node => $child};
+        my $d = {
+            path => $child->path_name,
+            node => $child,
+            name => $child->navi_name,
+        };
         $d->{children} = $child->navi_tree(\@ps)
             unless $child->can('content');
     $d});
@@ -107,7 +143,11 @@ sub navi_stack ($self, $parts) {
     # Transform children
     my $active;
     my $level = $self->clone->children->map(sub ($child) {
-        my $d = {path => $child->path_name, node => $child};
+        my $d = {
+            path => $child->path_name,
+            node => $child,
+            name => $child->navi_name,
+        };
         if (defined $next and $child->path_name eq $next) {
             $d->{active} = 1;
             $active = $child unless $child->can('content');

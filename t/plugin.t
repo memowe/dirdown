@@ -34,7 +34,8 @@ subtest 'Standard web app' => sub {
 
     subtest 'Directory listing' => sub {
         $t->get_ok('/x')->status_is(200)
-            ->text_is('li:first-child a[href="/x/F_oo"]' => 'F_oo')
+            ->text_is(h1 => 'All pages in .')
+            ->text_is('li:first-child a[href="/x/F_oo"]' => 'F oo')
             ->text_is('li:nth-child(2) a[href="/x/bar"]' => 'bar');
     };
 

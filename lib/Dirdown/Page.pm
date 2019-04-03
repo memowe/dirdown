@@ -28,7 +28,8 @@ sub _read ($self) {
 sub _extract_name ($self) {
 
     # Name from Meta yaml information has priority
-    return $self->meta->{name} if defined $self->meta->{name};
+    return $self->meta->{name}      if exists $self->meta->{name};
+    return $self->meta->{navi_name} if exists $self->meta->{navi_name};
 
     # Extract name from basename (foo_bar.md -> foo bar)
     my $name = $self->path_name;

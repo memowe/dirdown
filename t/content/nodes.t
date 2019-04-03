@@ -72,8 +72,8 @@ subtest Node => sub {
         };
 
         subtest 'Content lookup' => sub {
-            is $node->content_for(undef) => undef, 'No content for undef';
-            is $node->content_for('') => undef, "No content for ''";
+            is $node->content_for(undef) => $node, 'Node listing for undef';
+            is $node->content_for('') => $node, "Node listing for ''";
             my $child = $node->content_for('baz');
             isa_ok $child => 'Dirdown::Page', "'baz' child";
             is $child->path => $file_baz, 'Correct child path';

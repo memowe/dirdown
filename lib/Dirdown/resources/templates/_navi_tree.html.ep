@@ -1,0 +1,31 @@
+%#
+% my $render_nav_tree;
+% $render_nav_tree = begin
+    % my ($items, $parts) = @_;
+    % return unless @$items;
+    % $parts //= [];
+    <ul>
+    % for my $i (@$items) {
+        % my @parts = (@$parts, $i->{path});
+        % my $path  = join '/' => @parts;
+        <li>
+            %= link_to dirdown_page => {cpath => $path} => begin
+            % if ($i->{active}) {
+                <strong><%= $i->{name} %></strong>
+            % } else {
+                %= $i->{name}
+            % }
+            % end
+        </li>
+        % if (exists $i->{children}) {
+            %== $render_nav_tree->($i->{children}, \@parts)
+        % }
+    % }
+    </ul>
+% end
+%#
+
+<nav id="nav-tree">
+    <h2>Navigation</h2>
+    %= $render_nav_tree->($tree)
+</nav>

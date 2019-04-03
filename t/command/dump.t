@@ -47,7 +47,7 @@ subtest Generate => sub {
     };
 
     subtest Content => sub {
-        $t->get_ok('/')->content_is($dd->child('index.html')->slurp);
+        $t->get_ok('/index')->content_is($dd->child('index.html')->slurp);
         $t->get_ok('/foo')->content_is($dd->child('foo.html')->slurp);
         $t->get_ok('/bar/baz')->content_is($dd->child('bar/baz.html')->slurp);
         $t->get_ok('/answer.txt')->content_is($dd->child('answer.txt')->slurp);

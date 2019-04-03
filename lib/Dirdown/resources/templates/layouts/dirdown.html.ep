@@ -2,5 +2,6 @@
 <html><head><title><%= $title %></title>
 %= content 'header'
 </head><body>
+%= include '_navi_tree', tree => stash 'navi_tree' if stash 'navi_tree';
 %= content
 </body></html>

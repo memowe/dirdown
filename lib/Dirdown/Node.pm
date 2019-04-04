@@ -110,18 +110,20 @@ sub navi_name ($self) {
     return $name;
 }
 
-sub navi_tree ($self, $parts = '__FULL__') {
+sub navi_tree ($self, $prefix, $parts = '__FULL__') {
     my (@ps) = ($parts eq '__FULL__') ? 42 : @$parts;
     my $next = shift @ps;
 
     # Full tree: nothing active, all children, "cloned"
     my $tree = $self->clone->children->map(sub ($child) {
+        my $cpath = $prefix . '/' . $child->path_name;
         my $d = {
-            path => $child->path_name,
-            node => $child,
-            name => $child->navi_name,
+            cpath   => $cpath,
+            path    => $child->path_name,
+            node    => $child,
+            name    => $child->navi_name,
         };
-        $d->{children} = $child->navi_tree(\@ps)
+        $d->{children} = $child->navi_tree($cpath, \@ps)
             unless $child->can('content');
     $d});
     return $tree if $parts eq '__FULL__';

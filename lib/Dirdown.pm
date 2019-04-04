@@ -26,7 +26,7 @@ sub content_for ($self, $path) {
 sub navi_tree ($self, $path = '__FULL__') {
 
     # Full tree?
-    return $self->tree->navi_tree if $path eq '__FULL__';
+    return $self->tree->navi_tree('') if $path eq '__FULL__';
 
     # Path exists?
     my $leaf = $self->content_for($path);
@@ -39,7 +39,7 @@ sub navi_tree ($self, $path = '__FULL__') {
             and @$parts and $parts->[-1] ne $self->home;
 
     # Delegate
-    return $self->tree->navi_tree($parts);
+    return $self->tree->navi_tree('', $parts);
 }
 
 sub navi_stack ($self, $path = undef) {

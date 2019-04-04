@@ -82,7 +82,7 @@ subtest Node => sub {
         subtest 'Navi tree' => sub {
 
             subtest Full => sub {
-                my $fnt = $node->navi_tree;
+                my $fnt = $node->navi_tree('');
                 ok defined($fnt), 'Full navi tree defined';
                 is scalar(@$fnt) => 1, 'One child found';
                 ok $fnt->[0]{node}->equals($node->children->[0]),
@@ -90,10 +90,10 @@ subtest Node => sub {
             };
 
             subtest Partial => sub {
-                my $fnt = $node->navi_tree(['baz']);
+                my $fnt = $node->navi_tree('', ['baz']);
                 ok defined($fnt), 'Full navi tree defined';
                 ok delete($fnt->[0]{active}), 'Child is active';
-                is_deeply $fnt => $node->navi_tree, "That's it";
+                is_deeply $fnt => $node->navi_tree(''), "That's it";
             };
         };
     };

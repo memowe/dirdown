@@ -1,0 +1,22 @@
+<nav id="nav-stack">
+    <h2>Navigation</h2>
+    <div id="nav-stack-levels">
+    % my $stpath = '';
+    % for my $level (@$stack) {
+        <ul>
+        % $level->each(sub {my $i = shift;
+            <li>
+                % (my $cp = $i->{cpath}) =~ s|^/||;
+                %= link_to dirdown_page => {cpath => $cp} => begin
+                % if ($i->{active}) {
+                    <strong><%= $i->{name} %></strong>
+                % } else {
+                    %= $i->{name}
+                % }
+                % end
+            </li>
+        % });
+        </ul>
+    % }
+    </div>
+</nav>

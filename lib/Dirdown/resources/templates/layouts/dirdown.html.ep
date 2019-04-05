@@ -2,6 +2,7 @@
 <html><head><title><%= $title %></title>
 %= content 'header'
 </head><body>
-%= include '_navi_tree', tree => stash 'navi_tree' if stash 'navi_tree';
+%= include '_navi_tree',  tree  => stash 'navi_tree'  if stash 'navi_tree';
+%= include '_navi_stack', stack => stash 'navi_stack' if stash 'navi_stack';
 %= content
 </body></html>

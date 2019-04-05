@@ -14,10 +14,10 @@
                 %= $i->{name}
             % }
             % end
-        </li>
         % if (exists $i->{children}) {
             %== $render_nav_tree->($i->{children})
         % }
+        </li>
     % }
     </ul>
 % end

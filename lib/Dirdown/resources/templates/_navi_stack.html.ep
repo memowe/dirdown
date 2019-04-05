@@ -5,7 +5,8 @@
     % for my $level (@$stack) {
         <ul>
         % $level->each(sub {my $i = shift;
-            <li>
+            % my $class = $i->{active} ? 'active' : '';
+            <li class="<%= $class %>">
                 % (my $cp = $i->{cpath}) =~ s|^/||;
                 %= link_to dirdown_page => {cpath => $cp} => begin
                 % if ($i->{active}) {

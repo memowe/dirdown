@@ -8,7 +8,8 @@ use Mojo::File 'tempdir';
 
 ### Prepare dirdown directory structure with content
 my $dir         = tempdir;
-my $file_foo    = $dir      ->child('1_F_oo.md')->spurt('# Foo');
+my $file_foo    = $dir      ->child('1_F_oo.md')->spurt(
+    "navi_name: 'Foo 42'\n---\n# Foo");
 my $dir_bar     = $dir      ->child('2_bar')->make_path;
 my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# Baz');
 ### Preparations done
@@ -72,12 +73,15 @@ subtest Navigation => sub {
         subtest 'Full tree' => sub {
             ok defined($nt), 'Navi tree defined';
             is $nt->[0]{path} => 'F_oo', 'Correct first path';
+            is $nt->[0]{name} => 'Foo 42', 'Correct first name';
             ok $nt->[0]{node}->equals($rt->[0]),
                 'Correct first page';
             is $nt->[1]{path} => 'bar', 'Correct second path';
+            is $nt->[1]{name} => 'bar', 'Correct second name';
             ok $nt->[1]{node}->equals($rt->[1]),
                 'Correct second dir';
             is $nt->[1]{children}[0]{path} => 'baz', 'Correct third path';
+            is $nt->[1]{children}[0]{name} => 'bar', 'Correct third name';
             ok $nt->[1]{children}[0]{node}->equals($rt->[1]->children->[0]),
                 'Correct third page';
         };

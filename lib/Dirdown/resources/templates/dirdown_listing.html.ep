@@ -1,10 +1,12 @@
-% layout 'dirdown', title => $page->can('name') ? $page->name : $page->path_name;
-<section id="dirdown-listing"><ul>
+% layout 'dirdown', title => $page->navi_name;
+<section id="dirdown-listing">
+    <h1>All pages in <%= $page->navi_name %></h1>
+    <ul>
 % $dir->children->each(sub {
     % my $i = shift;
     % my $path = join '/' => grep {$_ ne ''} $page_path, $i->path_name;
     <li>
-        %= link_to $i->path_name => dirdown_page => {cpath => $path}
+        %= link_to $i->navi_name => dirdown_page => {cpath => $path}
     </li>
 % });
 </ul></section>

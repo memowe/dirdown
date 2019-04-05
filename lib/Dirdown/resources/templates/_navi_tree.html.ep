@@ -1,0 +1,29 @@
+%#
+% my $render_nav_tree;
+% $render_nav_tree = begin
+    % return unless my $items = shift;
+    <ul>
+    % for my $i (@$items) {
+        % my $class = $i->{active} ? 'active' : '';
+        <li class="<%= $class %>">
+            % (my $cp = $i->{cpath}) =~ s|^/||;
+            %= link_to dirdown_page => {cpath => $cp} => begin
+            % if ($i->{active}) {
+                <strong><%= $i->{name} %></strong>
+            % } else {
+                %= $i->{name}
+            % }
+            % end
+        % if (exists $i->{children}) {
+            %== $render_nav_tree->($i->{children})
+        % }
+        </li>
+    % }
+    </ul>
+% end
+%#
+
+<nav id="nav-tree">
+    <h2>Navigation</h2>
+    %= $render_nav_tree->($tree)
+</nav>

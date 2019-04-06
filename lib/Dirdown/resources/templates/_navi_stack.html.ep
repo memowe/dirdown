@@ -7,8 +7,7 @@
         % $level->each(sub {my $i = shift;
             % my $class = $i->{active} ? 'active' : '';
             <li class="<%= $class %>">
-                % (my $cp = $i->{cpath}) =~ s|^/||;
-                %= link_to dirdown_page => {cpath => $cp} => begin
+                %= link_to rel_path($i->{cpath}, $page_path) => begin
                 % if ($i->{active}) {
                     <strong><%= $i->{name} %></strong>
                 % } else {

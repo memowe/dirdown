@@ -40,6 +40,16 @@ sub register ($self, $app, $conf) {
     push @{$app->static->paths}, $res->child('public')->to_string;
     push @{$app->renderer->paths}, $res->child('templates')->to_string;
 
+    # Relative URL helper
+    $app->helper(rel_path => sub ($, $url, $base) {
+        $_ =~ s|^/+|| for $url, $base;
+        my $depth    =()= $base =~ m|/|g;
+        my $up          = '../' x $depth;
+        my $rel_path    = $up . $url;
+        return './' if $rel_path eq '';
+        return $rel_path;
+    });
+
     # Routes
     my $prefix = $env{prefix} // $conf->{prefix} // '/pages';
     my $r = $app->routes->any($prefix);

@@ -7,19 +7,19 @@ use Mojo::File 'path';
 
 my $t = Test::Mojo->new(path(__FILE__)->sibling('webapp'));
 
-subtest 'Relative paths' => sub {
-    my $r = sub ($url, $base) {$t->app->rel_path($url, $base)};
+subtest 'Relative HTML paths' => sub {
+    my $r = sub ($url, $base) {$t->app->rel_html_path($url, $base)};
 
     subtest 'Same level' => sub {
         is $r->('', '') => './', 'Empty paths';
-        is $r->('foo', 'bar') => 'foo', 'Single words';
-        is $r->('foo/bar', 'foo/baz'), '../foo/bar', 'Deep paths';
+        is $r->('foo', 'bar') => 'foo.html', 'Single words';
+        is $r->('foo/bar', 'foo/baz'), '../foo/bar.html', 'Deep paths';
     };
 
     subtest Complex => sub {
-        is $r->('foo', 'bar/baz') => '../foo', '../foo';
-        is $r->('foo/bar', 'foo') => 'foo/bar', '../foo/bar';
-        is $r->('foo/bar', 'foo/') => '../foo/bar', '../../foo/bar';
+        is $r->('foo', 'bar/baz') => '../foo.html', '../foo';
+        is $r->('foo/bar', 'foo') => 'foo/bar.html', '../foo/bar';
+        is $r->('foo/bar', 'foo/') => '../foo/bar.html', '../../foo/bar';
     };
 
     subtest 'Leading slashes' => sub {

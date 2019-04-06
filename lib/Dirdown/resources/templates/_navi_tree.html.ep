@@ -6,7 +6,7 @@
     % for my $i (@$items) {
         % my $class = $i->{active} ? 'active' : '';
         <li class="<%= $class %>">
-            %= link_to rel_path($i->{cpath}, $page_path) => begin
+            %= link_to rel_html_path($i->{cpath}, $page_path) => begin
             % if ($i->{active}) {
                 <strong><%= $i->{name} %></strong>
             % } else {

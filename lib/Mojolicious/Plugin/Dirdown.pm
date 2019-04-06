@@ -40,6 +40,23 @@ sub register ($self, $app, $conf) {
     push @{$app->static->paths}, $res->child('public')->to_string;
     push @{$app->renderer->paths}, $res->child('templates')->to_string;
 
+    # Relative URL helper
+    $app->helper(rel_html_path => sub ($, $url, $base) {
+
+        # No leading slashes
+        $_ =~ s|^/+|| for $url, $base;
+
+        # Go up and prepend '../'s
+        my $depth    =()= $base =~ m|/|g;
+        my $up          = '../' x $depth;
+        my $rel_path    = $up . $url;
+
+        # Special cases
+        return './' if $rel_path eq '';
+        return $rel_path if substr($rel_path, -1, 1) eq '/';
+        return "$rel_path.html";
+    });
+
     # Routes
     my $prefix = $env{prefix} // $conf->{prefix} // '/pages';
     my $r = $app->routes->any($prefix);

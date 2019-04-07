@@ -1,2 +1,2 @@
-% layout 'dirdown', title => $page->can('name') ? $page->name : $page->path_name;
+% layout 'dirdown', title => $page->name;
 <section id="dirdown-content"><%== $page->html %></section>

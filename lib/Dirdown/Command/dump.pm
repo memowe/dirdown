@@ -21,9 +21,13 @@ sub run ($self) {
     $self->create_rel_dir(my $target = path('dump'));
 
     # Static resources directory
-    path($_)->list_tree->each(sub ($f, $) {
-        $f->copy_to($target->child($f->to_rel($_)));
-    }) for @{$self->app->static->paths};
+    for my $stp (@{$self->app->static->paths}) {
+        path($stp)->list_tree->each(sub ($f, $) {
+            my $tf = $target->child($f->to_rel($stp));
+            $tf->dirname->make_path;
+            $f->copy_to($tf);
+        });
+    }
 
     # Request each page
     local $ENV{MOJO_LOG_LEVEL} = 'error';

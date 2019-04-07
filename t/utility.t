@@ -13,13 +13,13 @@ subtest 'Relative HTML paths' => sub {
     subtest 'Same level' => sub {
         is $r->('', '') => './', 'Empty paths';
         is $r->('foo', 'bar') => 'foo.html', 'Single words';
-        is $r->('foo/bar', 'foo/baz'), '../foo/bar.html', 'Deep paths';
+        is $r->('foo/bar', 'foo/baz'), 'bar.html', 'Deep paths';
     };
 
     subtest Complex => sub {
         is $r->('foo', 'bar/baz') => '../foo.html', '../foo';
         is $r->('foo/bar', 'foo') => 'foo/bar.html', '../foo/bar';
-        is $r->('foo/bar', 'foo/') => '../foo/bar.html', '../../foo/bar';
+        is $r->('foo/bar', 'foo/') => 'bar.html', '../../foo/bar';
     };
 
     subtest 'Leading slashes' => sub {

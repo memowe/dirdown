@@ -46,6 +46,13 @@ sub register ($self, $app, $conf) {
         # No leading slashes
         $_ =~ s|^/+|| for $url, $base;
 
+        # Remove shared directories
+        while ($url =~ m|^([^/]+/)|) {
+            my $d = $1;
+            last unless $base =~ m|^$d|;
+            s/^$d// for $url, $base;
+        }
+
         # Go up and prepend '../'s
         my $depth    =()= $base =~ m|/|g;
         my $up          = '../' x $depth;

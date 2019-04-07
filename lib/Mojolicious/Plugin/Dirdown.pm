@@ -41,7 +41,7 @@ sub register ($self, $app, $conf) {
     push @{$app->renderer->paths}, $res->child('templates')->to_string;
 
     # Relative URL helper
-    $app->helper(rel_html_path => sub ($, $url, $base) {
+    $app->helper(rel_path => sub ($, $url, $base) {
 
         # No leading slashes
         $_ =~ s|^/+|| for $url, $base;
@@ -59,8 +59,9 @@ sub register ($self, $app, $conf) {
         my $rel_path    = $up . $url;
 
         # Special cases
-        return './' if $rel_path eq '';
-        return $rel_path if substr($rel_path, -1, 1) eq '/';
+        return './'         if $rel_path eq '';
+        return $rel_path    if substr($rel_path, -1, 1) eq '/';
+        return $rel_path    if $rel_path =~ m|[^/\.]+\.[^/\.]+$|;
         return "$rel_path.html";
     });
 

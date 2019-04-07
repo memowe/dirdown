@@ -7,8 +7,8 @@ use Mojo::File 'path';
 
 my $t = Test::Mojo->new(path(__FILE__)->sibling('webapp'));
 
-subtest 'Relative HTML paths' => sub {
-    my $r = sub ($url, $base) {$t->app->rel_html_path($url, $base)};
+subtest 'Relative paths' => sub {
+    my $r = sub ($url, $base) {$t->app->rel_path($url, $base)};
 
     subtest 'Same level' => sub {
         is $r->('', '') => './', 'Empty paths';
@@ -25,6 +25,11 @@ subtest 'Relative HTML paths' => sub {
     subtest 'Leading slashes' => sub {
         is $r->('/foo', 'bar/baz') => $r->('foo', 'bar/baz'), 'First';
         is $r->('foo', '/bar/baz') => $r->('foo', 'bar/baz'), 'Second';
+    };
+
+    subtest 'Non-HTML files' => sub {
+        is $r->('/a/b/c.css', 'a/x/y.z') => '../b/c.css', 'css';
+        is $r->('x.jpg', '/a/b/c') => '../../x.jpg', 'jpg';
     };
 };
 

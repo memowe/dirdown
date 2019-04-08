@@ -4,9 +4,10 @@ use Mojo::Base 'Dirdown::Node', -signatures;
 use Carp;
 use Text::Markdown 'markdown';
 use YAML::XS; sub yaml ($text) {Load($text) // {}}
+use Mojo::Util 'encode', 'decode';
 
 has content     => \&_read;
-has meta        => sub ($self) {yaml $self->content->{yaml}};
+has meta        => sub ($self) {yaml encode 'UTF-8' => $self->content->{yaml}};
 has html        => sub ($self) {markdown $self->content->{markdown}};
 has name        => \&_extract_name;
 
@@ -14,7 +15,7 @@ sub _read ($self) {
 
     # Prepare raw content
     my $content     = {};
-    $content->{raw} = $self->path->slurp; # don't encode
+    $content->{raw} = decode 'UTF-8' => $self->path->slurp;
 
     # Try to split
     my ($first, $second) = split /^---$/m => $content->{raw};

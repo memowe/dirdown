@@ -1,11 +1,13 @@
 #!/usr/bin/env perl
 
+use utf8;
 use strict;
 use warnings;
 use Test::More;
 use Test::Mojo;
 use Test::Exception;
 use Mojo::File 'path', 'tempdir';
+use Mojo::Util 'encode';
 
 # Silence
 local $ENV{MOJO_LOG_LEVEL} = 'error';
@@ -14,7 +16,9 @@ local $ENV{MOJO_LOG_LEVEL} = 'error';
 my $dir         = tempdir;
 my $file_foo    = $dir      ->child('1_F_oo.md')->spurt('# Foo');
 my $dir_bar     = $dir      ->child('2_bar')->make_path;
-my $file_baz    = $dir_bar  ->child('baz.md')->spurt('# B! A! Z!');
+my $file_baz    = $dir_bar  ->child('baz.md')->spurt(encode 'UTF-8' => <<'MD');
+# B! Ä! Z!
+MD
 local $ENV{DIRDOWN_CONTENT} = $dir;
 
 subtest 'Standard web app' => sub {
@@ -28,8 +32,8 @@ subtest 'Standard web app' => sub {
 
     subtest Content => sub {
         $t->get_ok('/x/F_oo')->status_is(200)->text_is(h1 => 'Foo');
-        $t->get_ok('/x/bar/baz')->status_is(200)->text_is(h1 => 'B! A! Z!');
-        $t->get_ok('/x/bar')->status_is(200)->text_is(h1 => 'B! A! Z!');
+        $t->get_ok('/x/bar/baz')->status_is(200)->text_is(h1 => 'B! Ä! Z!');
+        $t->get_ok('/x/bar')->status_is(200)->text_is(h1 => 'B! Ä! Z!');
     };
 
     subtest 'Directory listing' => sub {
@@ -67,7 +71,7 @@ subtest Debug => sub {
             ->text_like('#dirdown_debug_name' => qr|2_bar/baz\.md|)
             ->text_is('#dirdown_debug_meta pre' => $t->app->dumper(
                 $t->app->dirdown->content_for('bar/baz')->meta))
-            ->text_is(h1 => 'B! A! Z!');
+            ->text_is(h1 => 'B! Ä! Z!');
     };
 };
 

@@ -18,7 +18,7 @@ my $file_baz    = $dir_bar  ->child('baz.md')->spurt(encode 'UTF-8' => <<'MD');
 answer: 42
 name: Es ist schön
 ---
-# B! A! Z!
+# B! Ä! Z!
 MD
 ### Preparations done
 
@@ -177,8 +177,7 @@ subtest Page => sub {
         isa_ok $page => 'Dirdown::Page', 'Constructed page object';
 
         subtest 'Raw content' => sub {
-            my $raw = encode 'UTF-8' =>
-                "answer: 42\nname: Es ist schön\n---\n# B! A! Z!\n";
+            my $raw = "answer: 42\nname: Es ist schön\n---\n# B! Ä! Z!\n";
             my ($yaml, $markdown) = split /---/ => $raw;
             is_deeply $page->content => {
                 raw      => $raw,
@@ -189,7 +188,7 @@ subtest Page => sub {
 
         is_deeply $page->meta => {answer => 42, name => "Es ist schön"},
             'Correct yaml meta data';
-        is $page->html => markdown('# B! A! Z!'), 'Correct generated HTML';
+        is $page->html => markdown('# B! Ä! Z!'), 'Correct generated HTML';
         is $page->name => 'Es ist schön', 'Correct page name';
         is $page->content_for('xnorfzt') => undef, "No content for 'xnorfzt'";
         is $page->content_for('') => $page, 'A page is its own empty content';

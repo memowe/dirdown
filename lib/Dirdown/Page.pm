@@ -17,7 +17,7 @@ sub _read ($self) {
     $content->{raw} = $self->path->slurp; # don't encode
 
     # Try to split
-    my ($first, $second) = split /^---+$/m => $content->{raw};
+    my ($first, $second) = split /^---$/m => $content->{raw};
     $content->{yaml}     = defined($second) ? $first : '';
     $content->{markdown} = defined($second) ? $second : $first;
 
